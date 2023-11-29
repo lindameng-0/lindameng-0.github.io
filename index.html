@@ -1,11 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello</title>
+    <title>School Locations</title>
+    <script>
+        // Check if the browser supports geolocation
+        if ("geolocation" in navigator) {
+            // Get the current position of the user
+            navigator.geolocation.getCurrentPosition(function(position) {
+                // Store the user's latitude and longitude
+                var userLat = position.coords.latitude;
+                var userLon = position.coords.longitude;
+
+                // Display the user's location on the webpage
+                var userLocation = document.getElementById("user-location");
+                userLocation.innerHTML = "Your location: " + userLat + ", " + userLon;
+            });
+        } else {
+            // Display an error message if geolocation is not supported
+            var errorMessage = document.getElementById("error-message");
+            errorMessage.innerHTML = "Sorry, your browser does not support geolocation.";
+        }
+
+        // Define a function to calculate the distance between two points
+        function getDistance(lat1, lon1, lat2, lon2) {
+            // Convert degrees to radians
+            var rad = function(x) {
+                return x * Math.PI / 180;
+            };
+
+            // Use the Haversine formula to calculate the distance
+            var R = 6371; // Earth's radius in km
+            var dLat = rad(lat2 - lat1);
+            var dLon = rad(lon2 - lon1);
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(rad(lat1)) * Math.cos(rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var d = R * c; // Distance in km
+            return d;
+        }
+
+        // Define a function to display the distance between the user and a location
+        function showDistance(location) {
+            // Get the latitude and longitude of the location from the data attribute
+            var locationLat = location.dataset.lat;
+            var locationLon = location.dataset.lon;
+
+            // Get the user's latitude and longitude from the webpage
+            var userLat = document.getElementById("user-location").innerHTML.split(", ")[0].split(": ")[1];
+            var userLon = document.getElementById("user-location").innerHTML.split(", ")[1];
+
+            // Calculate the distance using the getDistance function
+            var distance = getDistance(userLat, userLon, locationLat, locationLon);
+
+            // Display the distance on the webpage
+            var distanceDisplay = document.getElementById("distance-display");
+            distanceDisplay.innerHTML = "The distance between you and " + location.innerHTML + " is " + distance.toFixed(2) + " km.";
+        }
+    </script>
 </head>
 <body>
-    <h1>hello</h1>
+    <h1>School Locations</h1>
+    <p id="user-location"></p>
+    <p id="error-message"></p>
+    <ul>
+        <li><a href="#" data-lat="34.0967" data-lon="-117.7198" onclick="showDistance(this)">Classroom 1</a></li>
+        <li><a href="#" data-lat="34.0959" data-lon="-117.7203" onclick="showDistance(this)">Classroom 2</a></li>
+        <li><a href="#" data-lat="34.0954" data-lon="-117.7194" onclick="showDistance(this)">Field</a></li>
+    </ul>
+    <p id="distance-display"></p>
 </body>
 </html>
