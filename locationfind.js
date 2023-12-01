@@ -1,17 +1,14 @@
+// locationfind.js
 function geoFindMe() {
     const status = document.querySelector("#status");
-    const mapLink = document.querySelector("#map-link");
-  
-    mapLink.href = "";
-    mapLink.textContent = "";
+    const coords = document.querySelector("#coords");
   
     function success(position) {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
   
-      status.textContent = "";
-      mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-      mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+      status.textContent = "Location tracking started";
+      coords.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
     }
   
     function error() {
@@ -21,9 +18,16 @@ function geoFindMe() {
     if (!navigator.geolocation) {
       status.textContent = "Geolocation is not supported by your browser";
     } else {
-      navigator.geolocation.getCurrentPosition(success, error);
+      status.textContent = "Locating...";
+      return navigator.geolocation.watchPosition(success, error);
     }
   }
   
-  document.querySelector("#find-me").addEventListener("click", geoFindMe);
-  
+  document.querySelector("#find-me").addEventListener("click", function() {
+    let id = geoFindMe(); // store the watch ID in a variable
+    document.querySelector("#stop-tracking").addEventListener("click", function() {
+      navigator.geolocation.clearWatch(id); // clear the watch when the button is clicked
+      status.textContent = "Location tracking stopped";
+      coords.textContent = "";
+    });
+  });

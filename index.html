@@ -8,15 +8,8 @@
 <body>
     <button id="find-me">Show my location</button><br />
     <p id="status"></p>
-    <a id="map-link" target="_blank"></a>
+    <p id="coords"></p>
     <button id="stop-tracking">Stop tracking</button>
-    <script type="text/javascript">
-      var interval = setInterval(geoFindMe, 1000); // store the interval in a variable
-      document.querySelector("#stop-tracking").addEventListener("click", function() {
-        clearInterval(interval); // clear the interval when the button is clicked
-        status.textContent = "Location tracking stopped";
-        mapLink.href = "";
-        mapLink.textContent = "";
-      });    
-    </script>
+    <script type="text/javascript" src="locationfind.js"></script>
 </body>
+</html>
