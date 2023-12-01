@@ -18,27 +18,18 @@ function geoFindMe() {
       status.textContent = "Geolocation is not supported by your browser";
     } else {
       status.textContent = "Locating...";
-      // Use watchPosition instead of getCurrentPosition
-      return navigator.geolocation.watchPosition(success, error);
+      // Use getCurrentPosition instead of watchPosition
+      navigator.geolocation.getCurrentPosition(success, error);
     }
   }
   
-  // Remove the event listener from the find-me button
-  // document.querySelector("#find-me").addEventListener("click", function() {
-  //   let id = geoFindMe(); // store the watch ID in a variable
-  //   document.querySelector("#stop-tracking").addEventListener("click", function() {
-  //     navigator.geolocation.clearWatch(id); // clear the watch when the button is clicked
-  //     status.textContent = "Location tracking stopped";
-  //     coords.textContent = "";
-  //   });
-  // });
-
   // Call the geoFindMe function when the page loads
   window.onload = function() {
-    let id = geoFindMe(); // store the watch ID in a variable
+    let id = setInterval(geoFindMe, 1000); // call the function every 5 seconds
     document.querySelector("#stop-tracking").addEventListener("click", function() {
-      navigator.geolocation.clearWatch(id); // clear the watch when the button is clicked
+      clearInterval(id); // clear the interval when the button is clicked
       status.textContent = "Location tracking stopped";
       coords.textContent = "";
     });
   };
+  
