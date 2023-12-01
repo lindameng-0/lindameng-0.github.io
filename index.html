@@ -6,6 +6,9 @@
 </head>
 
 <body>
+    <button id="find-me">Show my location</button><br />
+    <p id="status"></p>
+    <a id="map-link" target="_blank"></a>
     <button id="stop-tracking">Stop tracking</button>
     <script type="text/javascript">
       var interval = setInterval(geoFindMe, 1000); // store the interval in a variable
@@ -17,4 +20,3 @@
       });    
     </script>
 </body>
-
