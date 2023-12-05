@@ -1,48 +1,23 @@
-function geoFindMe() {
-  const status = document.getElementById("status");
-  const coords = document.getElementById("coords");
+// Check if geolocation is supported by the browser
+if ("geolocation" in navigator) {
+  // Prompt user for permission to access their location
+  navigator.geolocation.watchPosition(
+    // Success callback function
+    function(position) {
+      // Get the user's latitude and longitude coordinates
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
 
-  function success(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-
-    status.textContent = "Location tracking started";
-    coords.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
-
-    // Display the user's location on a map using the Maps JavaScript API
-    // Create a map object and specify the DOM element for display
-    const map = new google.maps.Map(document.getElementById("map"), {
-      center: { lat: latitude, lng: longitude },
-      zoom: 15,
-    });
-
-    // Create a marker and set its position
-    const marker = new google.maps.Marker({
-      map: map,
-      position: { lat: latitude, lng: longitude },
-    });
-  }
-
-  function error() {
-    status.textContent = "Unable to retrieve your location";
-  }
-
-  if (!navigator.geolocation) {
-    status.textContent = "Geolocation is not supported by your browser";
-  } else {
-    status.textContent = "Locating...";
-    return navigator.geolocation.watchPosition(success, error);
-  }
+      // Update the map with the user's new location
+      console.log(`Latitude: ${lat}, longitude: ${lng}`);
+    },
+    // Error callback function
+    function(error) {
+      // Handle errors, e.g. user denied location sharing permissions
+      console.error("Error getting user location:", error);
+    }
+  );
+} else {
+  // Geolocation is not supported by the browser
+  console.error("Geolocation is not supported by this browser.");
 }
-
-window.onload = function () {
-  let id = geoFindMe(); // store the watch ID in a variable
-  document.querySelector("#stop-tracking").addEventListener("click", function () {
-    navigator.geolocation.clearWatch(id); // clear the watch when the button is clicked
-    status.textContent = "Location tracking stopped";
-    coords.textContent = "";
-
-    // Remove the map and the marker from the DOM
-    document.getElementById("map").innerHTML = "";
-  });
-};
