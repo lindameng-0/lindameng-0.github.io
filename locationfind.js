@@ -8,6 +8,19 @@ function geoFindMe() {
 
     status.textContent = "Location tracking started";
     coords.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+
+    // Display the user's location on a map using the Maps JavaScript API
+    // Create a map object and specify the DOM element for display
+    const map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: latitude, lng: longitude },
+      zoom: 15,
+    });
+
+    // Create a marker and set its position
+    const marker = new google.maps.Marker({
+      map: map,
+      position: { lat: latitude, lng: longitude },
+    });
   }
 
   function error() {
@@ -18,21 +31,18 @@ function geoFindMe() {
     status.textContent = "Geolocation is not supported by your browser";
   } else {
     status.textContent = "Locating...";
-    // Add a parameter to specify the options for the geolocation request
-    const options = {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0
-    };
-    return navigator.geolocation.watchPosition(success, error, options);
+    return navigator.geolocation.watchPosition(success, error);
   }
 }
 
-window.onload = function() {
+window.onload = function () {
   let id = geoFindMe(); // store the watch ID in a variable
-  document.querySelector("#stop-tracking").addEventListener("click", function() {
+  document.querySelector("#stop-tracking").addEventListener("click", function () {
     navigator.geolocation.clearWatch(id); // clear the watch when the button is clicked
     status.textContent = "Location tracking stopped";
     coords.textContent = "";
+
+    // Remove the map and the marker from the DOM
+    document.getElementById("map").innerHTML = "";
   });
 };
