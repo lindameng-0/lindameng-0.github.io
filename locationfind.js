@@ -13,7 +13,7 @@ function getLocation() {
       },
       {
         timeout: 5000,      // 5 seconds timeout
-        maximumAge: 60000   // 1 minute maximum age for cached position
+        maximumAge: 0   // 1 minute maximum age for cached position
       }
     );
   } else {
