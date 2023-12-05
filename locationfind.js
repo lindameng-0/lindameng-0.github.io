@@ -23,6 +23,8 @@ function getLocation() {
 }
 
 function getLocation() {
+  const x = document.getElementById("coords"); 
+
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(showPosition, function(error) {
       console.error("Error getting user location:", error);
@@ -39,3 +41,4 @@ function showPosition(position) {
 }
 
 window.addEventListener("load", getLocation);
+
