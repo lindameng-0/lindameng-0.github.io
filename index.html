@@ -1,14 +1,40 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+  <title>Real-time Location Tracker</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
-    <button id="find-me">Show my location</button><br />
-    <p id="status"></p>
-    <p id="coords"></p>
-    <button id="stop-tracking">Stop tracking</button>
-    <script type="text/javascript" src="locationfind.js"></script>
+  <div id="location"></div>
+  <script>
+    // Get the location element
+    let location = document.getElementById("location");
+
+    // Create a function to update the location text
+    function updateLocation(position) {
+      // Get the latitude and longitude from the position object
+      let lat = position.coords.latitude;
+      let lng = position.coords.longitude;
+
+      // Update the location text
+      location.textContent = `Latitude: ${lat}, longitude: ${lng}`;
+
+      // Log the coordinates to the console
+      console.log(`Latitude: ${lat}, longitude: ${lng}`);
+    }
+
+    // Check if the browser supports the Geolocation API
+    if ("geolocation" in navigator) {
+      // Watch the user's position and update the location text accordingly
+      navigator.geolocation.watchPosition(updateLocation, function(error) {
+        // Handle errors
+        console.error("Error getting user location:", error);
+      });
+    } else {
+      // Geolocation is not supported by the browser
+      console.error("Geolocation is not supported by this browser.");
+    }
+  </script>
 </body>
 </html>
