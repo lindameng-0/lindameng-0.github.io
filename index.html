@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Geolocation Example</title>
-  <style>
-    #map {
-      height: 400px;
-      width: 600px;
-    }
-    #coordsDiv {
-      font-family: Arial, sans-serif;
-      font-size: 20px;
-      color: blue;
-    }
-  </style>
+    <title>Geolocation Example</title>
 </head>
 <body>
-  <div id="map"></div>
-  <div id="coordsDiv">Coordinates will appear here</div>
-  <script src="locationfind.js"></script>
+    <h1>Geolocation Example</h1>
+    <p id="coords">Waiting for location...</p>
+    <script src="locationfind.js"></script>
+    <script>
+        // Get the element where the coordinates will be displayed
+        const x = document.getElementById("coords");
+        
+        // Define a function to show the position
+        function showPosition(position) {
+            // Update the element's innerHTML with the latitude and longitude
+            x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+        }
+        
+        // Modify the success callback function in the locationfind.js file
+        // to use the showPosition function
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(showPosition, errHand);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+    </script>
 </body>
 </html>
