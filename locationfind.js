@@ -22,18 +22,6 @@ function getLocation() {
   }
 }
 
-function getLocation() {
-  const x = document.getElementById("coords"); 
-
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(showPosition, function(error) {
-      console.error("Error getting user location:", error);
-    });
-  } else {
-    x.innerHTML = "Geolocation is not supported by this browser.";
-  }
-}
-
 function showPosition(position) {
   const x = document.getElementById("coords");
 
