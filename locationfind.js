@@ -1,17 +1,25 @@
-if ("geolocation" in navigator) {
-  navigator.geolocation.watchPosition(
-    function(position) {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(
+      function(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
 
-      console.log(`Latitude: ${lat}, longitude: ${lng}`);
-    },
-    function(error) {
-      console.error("Error getting user location:", error);
-    }
-  );
-} else {
-  console.error("Geolocation is not supported by this browser.");
+        console.log(`Latitude: ${lat}, longitude: ${lng}`);
+        showPosition(position); // Call showPosition to update the coordinates on each change
+      },
+      function(error) {
+        console.error("Error getting user location:", error);
+      },
+      {
+        timeout: 5000,      // 5 seconds timeout
+        maximumAge: 60000   // 1 minute maximum age for cached position
+      }
+    );
+  } else {
+    const x = document.getElementById("coords");
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
 }
 
 function getLocation() {
