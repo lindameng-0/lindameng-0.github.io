@@ -18,7 +18,7 @@ function getLocation() {
       }
     );
 
-    // Set a timer to call getCurrentPosition every 5 seconds
+    // Set a timer to call getCurrentPosition every 1 sec
     setInterval(function() {
       navigator.geolocation.getCurrentPosition(
         function(position) {
@@ -36,7 +36,7 @@ function getLocation() {
           maximumAge: 0   // 1 minute maximum age for cached position
         }
       );
-    }, 5000); // 5 seconds interval
+    }, 1000); // 1 sec interval
   } else {
     const x = document.getElementById("coords");
     x.innerHTML = "Geolocation is not supported by this browser.";
