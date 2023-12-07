@@ -52,3 +52,38 @@ function showPosition(position) {
 }
 
 window.addEventListener("load", getLocation);
+
+
+function getLocation() {
+  if (navigator.geolocation) {
+    // Call watchPosition once to start tracking the user location
+    const watchID = navigator.geolocation.watchPosition(
+      function(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        console.log(`Latitude: ${lat}, longitude: ${lng}`);
+        showwatchPosition(position); // Call showPosition to update the coordinates on the screen
+      },
+      function(error) {
+        console.error("Error getting user location:", error);
+      },
+      {
+        enableHighAccuracy:true,
+        timeout: 5000,      // 5 seconds timeout
+        maximumAge: 0
+      }
+    );
+  } else {
+    const x = document.getElementById("coordswatch");
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showwatchPosition(position) {
+  const x = document.getElementById("coordswatch");
+
+  x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+}
+
+window.addEventListener("load", getLocation);
