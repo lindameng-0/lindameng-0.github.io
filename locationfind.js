@@ -1,4 +1,3 @@
-
 function getLocation() {
   if (navigator.geolocation) {
     // Call getCurrentPosition once to get the initial location
@@ -14,8 +13,9 @@ function getLocation() {
         console.error("Error getting user location:", error);
       },
       {
+        enableHighAccuracy:true,
         timeout: 5000,      // 5 seconds timeout
-        maximumAge: 0   // 1 minute maximum age for cached position
+        maximumAge: 0
       }
     );
 
@@ -33,8 +33,9 @@ function getLocation() {
           console.error("Error getting user location:", error);
         },
         {
+          enableHighAccuracy:true,
           timeout: 5000,      // 5 seconds timeout
-          maximumAge: 0   // 1 minute maximum age for cached position
+          maximumAge: 0
         }
       );
     }, 1000); // 1 sec interval
