@@ -86,5 +86,5 @@ function showwatchPosition(position) {
   x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
 }
 
-window.addEventListener("load", getLocation);
+window.addEventListener("load", WatchLocation);
 
