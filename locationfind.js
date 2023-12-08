@@ -1,4 +1,4 @@
-/*function getLocation() {
+function getLocation() {
   if (navigator.geolocation) {
     // Call getCurrentPosition once to get the initial location
     navigator.geolocation.getCurrentPosition(
@@ -52,7 +52,7 @@ function showPosition(position) {
 }
 
 window.addEventListener("load", getLocation);
-*/
+
 
 function WatchLocation() {
   if (navigator.geolocation) {
