@@ -1,3 +1,4 @@
+navigator.geolocation.getCurrentPosition(function () {}, function () {}, {});
 function getLocation() {
   if (navigator.geolocation) {
     // Call getCurrentPosition once to get the initial location
