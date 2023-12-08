@@ -54,7 +54,7 @@ function showPosition(position) {
 window.addEventListener("load", getLocation);
 
 
-function WatchLocation() {
+/*function WatchLocation() {
   if (navigator.geolocation) {
     // Call watchPosition once to start tracking the user location
     const watchID = navigator.geolocation.watchPosition(
@@ -88,3 +88,4 @@ function showwatchPosition(position) {
 
 window.addEventListener("load", WatchLocation);
 
+*/
