@@ -1,4 +1,4 @@
-if (navigator.geolocation) {
+/*if (navigator.geolocation) {
     var location_timeout = setTimeout("geolocFail()", 10000);
 
     // Use watchPosition instead of getCurrentPosition
@@ -29,3 +29,4 @@ function stopWatch() {
         watchID = null;
     }
 }
+*/
