@@ -1,5 +1,5 @@
 navigator.geolocation.getCurrentPosition(function () {}, function () {}, {});
-function getLocation() {
+/*function getLocation() {
   if (navigator.geolocation) {
     // Call getCurrentPosition once to get the initial location
     navigator.geolocation.getCurrentPosition(
@@ -45,6 +45,7 @@ function getLocation() {
     x.innerHTML = "Geolocation is not supported by this browser.";
   }
 }
+*/
 
 function showPosition(position) {
   const x = document.getElementById("coords");
@@ -55,7 +56,7 @@ function showPosition(position) {
 window.addEventListener("load", getLocation);
 
 
-/*function WatchLocation() {
+function WatchLocation() {
   if (navigator.geolocation) {
     // Call watchPosition once to start tracking the user location
     const watchID = navigator.geolocation.watchPosition(
@@ -89,4 +90,4 @@ function showwatchPosition(position) {
 
 window.addEventListener("load", WatchLocation);
 
-*/
+
