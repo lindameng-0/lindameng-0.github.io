@@ -45,7 +45,6 @@ navigator.geolocation.getCurrentPosition(function () {}, function () {}, {});
     x.innerHTML = "Geolocation is not supported by this browser.";
   }
 }
-*/
 
 function showPosition(position) {
   const x = document.getElementById("coords");
@@ -54,7 +53,7 @@ function showPosition(position) {
 }
 
 window.addEventListener("load", getLocation);
-
+*/
 
 function WatchLocation() {
   if (navigator.geolocation) {
