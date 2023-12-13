@@ -55,6 +55,27 @@ function showPosition(position) {
 window.addEventListener("load", getLocation);
 */
 
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  // Convert degrees to radians
+  lat1 = lat1 * Math.PI / 180;
+  lon1 = lon1 * Math.PI / 180;
+  lat2 = lat2 * Math.PI / 180;
+  lon2 = lon2 * Math.PI / 180;
+
+  // Calculate the differences between the coordinates
+  let dLat = lat2 - lat1;
+  let dLon = lon2 - lon1;
+
+  // Apply the haversine formula
+  let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(lat1) * Math.cos(lat2) *
+          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  let c = 2 * Math.asin(Math.sqrt(a));
+  let r = 6371; // Radius of the Earth in km
+  let d = r * c; // Distance in km
+  return d;
+}
+
 function WatchLocation() {
   if (navigator.geolocation) {
     // Call watchPosition once to start tracking the user location
@@ -85,8 +106,23 @@ function showwatchPosition(position) {
   const x = document.getElementById("coordswatch");
 
   x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+
+  // Get the fixed point coordinates
+  const lat2 = 34.1234679;
+  const lon2 = -117.7390249;
+
+  // Calculate the distance using the haversine formula
+  const distance = haversineDistance(position.coords.latitude, position.coords.longitude, lat2, lon2);
+
+  // Display the distance in a new element
+  const y = document.getElementById("distancewatch");
+  y.innerHTML = `Distance: ${distance.toFixed(2)} km`;
 }
 
 window.addEventListener("load", WatchLocation);
 
-
+// Create a new element for the distance and append it to the outer div
+const outer = document.getElementById("outer");
+const distancewatch = document.createElement("p");
+distancewatch.id = "distancewatch";
+outer.appendChild(distancewatch);
