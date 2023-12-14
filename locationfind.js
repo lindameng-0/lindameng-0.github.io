@@ -119,11 +119,14 @@ function showwatchPosition(position) {
   y.innerHTML = `Distance: ${distance.toFixed(2)} km`;
 }
 
-window.addEventListener("load", WatchLocation);
+// Use window.onload to ensure the DOM is loaded before running the code
+window.onload = function() {
+  // Call WatchLocation to start tracking the user location
+  WatchLocation();
 
-// Create a new element for the distance and append it to the outer div
-const outer = document.getElementById("outer");
-const distancewatch = document.createElement("p");
-distancewatch.id = "distancewatch";
-outer.appendChild(distancewatch);
-
+  // Create a new element for the distance and append it to the outer div
+  const outer = document.getElementById("outer");
+  const distancewatch = document.createElement("p");
+  distancewatch.id = "distancewatch";
+  outer.appendChild(distancewatch);
+}
