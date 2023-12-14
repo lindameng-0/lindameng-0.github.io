@@ -114,9 +114,12 @@ function showwatchPosition(position) {
   // Calculate the distance using the haversine formula
   const distance = haversineDistance(position.coords.latitude, position.coords.longitude, lat2, lon2);
 
+  // Convert the distance from km to m
+  const distanceInMeters = distance * 1000;
+
   // Display the distance in a new element
   const y = document.getElementById("distancewatch");
-  y.innerHTML = `Distance: ${distance.toFixed(2)} km`;
+  y.innerHTML = `Distance: ${distanceInMeters.toFixed(2)} m`; // Round the distance to 2 decimal places
 }
 
 // Use window.onload to ensure the DOM is loaded before running the code
