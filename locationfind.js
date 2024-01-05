@@ -1,5 +1,4 @@
-// Import the KalmanJS library
-const KalmanFilter = require('kalmanjs');
+navigator.geolocation.getCurrentPosition(function () {}, function () {}, {});
 
 // Create a new instance of the KalmanFilter class
 // Adjust the R and Q parameters as needed
