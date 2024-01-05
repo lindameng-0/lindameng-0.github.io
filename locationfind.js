@@ -35,6 +35,9 @@ function WatchLocation() {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
 
+        console.log(`Latitude: ${lat}, longitude: ${lng}`);
+        showwatchPosition(lat, lng); // Call showPosition to update the coordinates on the screen
+
         // Apply the Kalman filter to get the smoothed values
         const filteredLat = kf.filter(lat);
         const filteredLng = kf.filter(lng);
