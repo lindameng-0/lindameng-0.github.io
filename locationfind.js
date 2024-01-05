@@ -1,4 +1,9 @@
-navigator.geolocation.getCurrentPosition(function () {}, function () {}, {});
+// Import the KalmanJS library
+import KalmanFilter from 'kalmanjs';
+
+// Create a new instance of the KalmanFilter class
+// Adjust the R and Q parameters as needed
+const kf = new KalmanFilter({R: 0.01, Q: 3});
 
 function haversineDistance(lat1, lon1, lat2, lon2) {
   // Convert degrees to radians
@@ -26,11 +31,16 @@ function WatchLocation() {
     // Call watchPosition once to start tracking the user location
     const watchID = navigator.geolocation.watchPosition(
       function(position) {
+        // Get the raw latitude and longitude values
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
 
-        console.log(`Latitude: ${lat}, longitude: ${lng}`);
-        showwatchPosition(position); // Call showPosition to update the coordinates on the screen
+        // Apply the Kalman filter to get the smoothed values
+        const filteredLat = kf.filter(lat);
+        const filteredLng = kf.filter(lng);
+
+        console.log(`Latitude: ${filteredLat}, longitude: ${filteredLng}`);
+        showwatchPosition(filteredLat, filteredLng); // Call showPosition to update the coordinates on the screen
       },
       function(error) {
         console.error("Error getting user location:", error);
@@ -47,17 +57,17 @@ function WatchLocation() {
   }
 }
 
-function showwatchPosition(position) {
+function showwatchPosition(lat, lng) {
   const x = document.getElementById("coordswatch");
 
-  x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+  x.innerHTML = `Latitude: ${lat}, Longitude: ${lng}`;
 
   // Get the fixed point coordinates
   const lat2 = 34.123754;
   const lon2 = -117.7378068;
 
   // Calculate the distance using the haversine formula
-  const distance = haversineDistance(position.coords.latitude, position.coords.longitude, lat2, lon2);
+  const distance = haversineDistance(lat, lng, lat2, lon2);
 
   // Convert the distance from km to m
   const distanceInMeters = distance * 1000;
@@ -78,61 +88,3 @@ window.onload = function() {
   distancewatch.id = "distancewatch";
   outer.appendChild(distancewatch);
 }
-//v2
-
-
-/*function getLocation() {
-  if (navigator.geolocation) {
-    // Call getCurrentPosition once to get the initial location
-    navigator.geolocation.getCurrentPosition(
-      function(position) {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-
-        console.log(`Latitude: ${lat}, longitude: ${lng}`);
-        showPosition(position); // Call showPosition to update the coordinates on the screen
-      },
-      function(error) {
-        console.error("Error getting user location:", error);
-      },
-      {
-        enableHighAccuracy:true,
-        timeout: 5000,      // 5 seconds timeout
-        maximumAge: 0
-      }
-    );
-
-    // Set a timer to call getCurrentPosition every 1 sec
-    setInterval(function() {
-      navigator.geolocation.getCurrentPosition(
-        function(position) {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-
-          console.log(`Latitude: ${lat}, longitude: ${lng}`);
-          showPosition(position); // Call showPosition to update the coordinates on the screen
-        },
-        function(error) {
-          console.error("Error getting user location:", error);
-        },
-        {
-          enableHighAccuracy:true,
-          timeout: 5000,      // 5 seconds timeout
-          maximumAge: 0
-        }
-      );
-    }, 1000); // 1 sec interval
-  } else {
-    const x = document.getElementById("coords");
-    x.innerHTML = "Geolocation is not supported by this browser.";
-  }
-}
-
-function showPosition(position) {
-  const x = document.getElementById("coords");
-
-  x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
-}
-
-window.addEventListener("load", getLocation);
-*/
