@@ -1,5 +1,5 @@
 // Import the KalmanJS library
-import KalmanFilter from 'kalmanjs';
+const KalmanFilter = require('kalmanjs');
 
 // Create a new instance of the KalmanFilter class
 // Adjust the R and Q parameters as needed
