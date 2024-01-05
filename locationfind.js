@@ -53,8 +53,8 @@ function showwatchPosition(position) {
   x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
 
   // Get the fixed point coordinates
-  const lat2 = 34.1234679;
-  const lon2 = -117.7390249;
+  const lat2 = 34.123754;
+  const lon2 = -117.7378068;
 
   // Calculate the distance using the haversine formula
   const distance = haversineDistance(position.coords.latitude, position.coords.longitude, lat2, lon2);
