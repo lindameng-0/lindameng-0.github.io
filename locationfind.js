@@ -1,8 +1,5 @@
 navigator.geolocation.getCurrentPosition(function () {}, function () {}, {});
 
-// Import the KalmanFilter class from the kalmanjs library
-const { KalmanFilter } = require('kalman.js');
-
 // Adjust the R and Q parameters as needed
 const kf = new KalmanFilter({R: 0.01, Q: 3});
 
