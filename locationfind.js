@@ -80,6 +80,7 @@ window.onload = function() {
 }
 //v2
 
+
 /*function getLocation() {
   if (navigator.geolocation) {
     // Call getCurrentPosition once to get the initial location
