@@ -1,5 +1,8 @@
 navigator.geolocation.getCurrentPosition(function () {}, function () {}, {});
 
+// Adjust the R and Q parameters as needed
+const kf = new KalmanFilter({R: 0.01, Q: 3});
+
 function haversineDistance(lat1, lon1, lat2, lon2) {
   // Convert degrees to radians
   lat1 = lat1 * Math.PI / 180;
@@ -26,11 +29,19 @@ function WatchLocation() {
     // Call watchPosition once to start tracking the user location
     const watchID = navigator.geolocation.watchPosition(
       function(position) {
+        // Get the raw latitude and longitude values
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
 
         console.log(`Latitude: ${lat}, longitude: ${lng}`);
-        showwatchPosition(position); // Call showPosition to update the coordinates on the screen
+        showwatchPosition(lat, lng); // Call showPosition to update the coordinates on the screen
+
+        // Apply the Kalman filter to get the smoothed values
+        const filteredLat = kf.filter(lat);
+        const filteredLng = kf.filter(lng);
+
+        console.log(`Latitude: ${filteredLat}, longitude: ${filteredLng}`);
+        showwatchPosition(filteredLat, filteredLng); // Call showPosition to update the coordinates on the screen
       },
       function(error) {
         console.error("Error getting user location:", error);
@@ -47,17 +58,17 @@ function WatchLocation() {
   }
 }
 
-function showwatchPosition(position) {
+function showwatchPosition(lat, lng) {
   const x = document.getElementById("coordswatch");
 
-  x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+  x.innerHTML = `Latitude: ${lat}, Longitude: ${lng}`;
 
   // Get the fixed point coordinates
   const lat2 = 34.123754;
   const lon2 = -117.7378068;
 
   // Calculate the distance using the haversine formula
-  const distance = haversineDistance(position.coords.latitude, position.coords.longitude, lat2, lon2);
+  const distance = haversineDistance(lat, lng, lat2, lon2);
 
   // Convert the distance from km to m
   const distanceInMeters = distance * 1000;
@@ -78,3 +89,4 @@ window.onload = function() {
   distancewatch.id = "distancewatch";
   outer.appendChild(distancewatch);
 }
+
