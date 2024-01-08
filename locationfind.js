@@ -48,33 +48,24 @@ function WatchLocation() {
 }
 
 function showwatchPosition(position) {
-  const x = document.getElementById("coordswatch");
-
-  x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
-
-  // Get the fixed point coordinates
-  const lat2 = 34.123754;
-  const lon2 = -117.7378068;
-
-  // Calculate the distance using the haversine formula
-  const distance = haversineDistance(position.coords.latitude, position.coords.longitude, lat2, lon2);
-
-  // Convert the distance from km to m
-  const distanceInMeters = distance * 1000;
-
-  // Display the distance in a new element
-  const y = document.getElementById("distancewatch");
-  y.innerHTML = `Distance: ${distanceInMeters.toFixed(2)} m`; // Round the distance to 2 decimal places
-}
-
-// Use window.onload to ensure the DOM is loaded before running the code
-window.onload = function() {
-  // Call WatchLocation to start tracking the user location
-  WatchLocation();
-
-  // Create a new element for the distance and append it to the outer div
-  const outer = document.getElementById("outer");
-  const distancewatch = document.createElement("p");
-  distancewatch.id = "distancewatch";
-  outer.appendChild(distancewatch);
-}
+    const x = document.getElementById("coordswatch");
+  
+    x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+  
+    // Loop over the locations array and calculate the distance to each one
+    for (let location of locations) {
+      // Get the fixed point coordinates
+      const lat2 = location.lat;
+      const lon2 = location.lon;
+  
+      // Calculate the distance using the haversine formula
+      const distance = haversineDistance(position.coords.latitude, position.coords.longitude, lat2, lon2);
+  
+      // Convert the distance from km to m
+      const distanceInMeters = distance * 1000;
+  
+      // Display the distance in a new element with the location name
+      const y = document.getElementById("distancewatch");
+      y.innerHTML += `Distance to ${location.name}: ${distanceInMeters.toFixed(2)} m<br>`; // Round the distance to 2 decimal places and add a line break
+    }
+  }

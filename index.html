@@ -6,28 +6,33 @@
 
 </head>
 <body>
-    <!--
-    <h1>Geolocation Example, getcurrentlocation v2</h1>
-    <p id="coords">Waiting for location...</p>
-    <script src="locationfind.js"></script>
--->
     <h1>v6</h1>
 
     <h1>Geolocation Example, watchposition v1</h1>
     <p id="coordswatch">Waiting for location...</p>
 
-    <h1>Haversine Distance Robotics Walkway </h1>
-    <div id="outer"></div>
-
-    <h1>Haversine Distance Science Back Door Outside</h1>
-
-    <h1>Haversine Distance Soho Door Inside</h1>
-
-    <!--
-    <script src="kalman.js"></script>
-   -->
-
     <script src="locationfind.js"></script>
+
+    <script>
+    // Create an array of objects to store the locations and their names
+    const locations = [
+      {name: "Library", lat: 34.123754, lon: -117.7378068},
+      {name: "Cafeteria", lat: 34.124567, lon: -117.738901},
+      {name: "Gym", lat: 34.125678, lon: -117.736789}
+    ];
+
+    // Loop over the locations array and create the HTML elements for each one
+    for (let location of locations) {
+      // Create a new h1 element with the location name and coordinates
+      document.write(`<h1>Haversine Distance ${location.name} (${location.lat}, ${location.lon})</h1>`);
+
+      // Create a new div element for the distance and append it to the outer div
+      const outer = document.getElementById("outer");
+      const distancewatch = document.createElement("div");
+      distancewatch.id = `distancewatch-${location.name}`;
+      outer.appendChild(distancewatch);
+    }
+    </script>
     
 </body>
 </html>
