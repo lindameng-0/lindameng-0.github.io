@@ -15,25 +15,27 @@
     <script src="locationfind.js"></script>
 
     <script>
-    // Create an array of objects to store the locations and their names
-    const locations = [
-      {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
-      {name: "Soho Door", lat: 34.124567, lon: -117.738901},
-      {name: "Science Back Door", lat: 34.125678, lon: -117.736789}
-    ];
-
-    // Loop over the locations array and create the HTML elements for each one
-    for (let location of locations) {
-      // Create a new h1 element with the location name and coordinates
-      document.write(`<h1>Haversine Distance ${location.name} (${location.lat}, ${location.lon})</h1>`);
-
-      // Create a new div element for the distance and append it to the outer div
-      const outer = document.getElementById("outer");
-      const distancewatch = document.createElement("div");
-      distancewatch.id = `distancewatch-${location.name}`;
-      outer.appendChild(distancewatch);
-    }
-    </script>
+      // Create an array of objects to store the locations and their names
+      const locations = [
+        {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
+        {name: "Soho Door", lat: 34.124567, lon: -117.738901},
+        {name: "Science Back Door", lat: 34.125678, lon: -117.736789}
+      ];
+      
+      // Loop over the locations array and create the HTML elements for each one
+      for (let location of locations) {
+        // Create a new h1 element with the location name and coordinates
+        const h1 = document.createElement("h1");
+        h1.textContent = `Haversine Distance ${location.name} (${location.lat}, ${location.lon})`;
+      
+        // Create a new div element for the distance and append it to the outer div
+        const outer = document.getElementById("outer");
+        const distancewatch = document.createElement("div");
+        distancewatch.id = `distancewatch-${location.name}`;
+        outer.appendChild(h1);
+        outer.appendChild(distancewatch);
+      }
+      </script>      
     
 </body>
 </html>
