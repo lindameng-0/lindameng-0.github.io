@@ -71,3 +71,5 @@ function showwatchPosition(position) {
   }
 
   window.addEventListener("load", WatchLocation);
+
+  //v7
