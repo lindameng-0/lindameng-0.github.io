@@ -66,7 +66,7 @@ function showwatchPosition(position) {
   
       // Display the distance in a new element with the location name
       const y = document.getElementById(`distancewatch-${location.name}`);
-      y.innerHTML += `Distance to ${location.name}: ${distanceInMeters.toFixed(2)} m<br>`; // Round the distance to 2 decimal places and add a line break
+      y.innerHTML = `<h2>${location.name}</h2><p>Distance: ${distanceInMeters.toFixed(2)} m</p>`; // Round the distance to 2 decimal places and use tags
     }
   }
 
@@ -74,4 +74,3 @@ function showwatchPosition(position) {
 
   //v7
 
-  
