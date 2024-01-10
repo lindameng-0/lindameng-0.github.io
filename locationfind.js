@@ -1,4 +1,4 @@
-import { GPSKalmanFilter } from 'kalman-filter-js';
+import { GPSKalmanFilter } from 'kalman_gps.js';
 
 const kalman = new GPSKalmanFilter();
 
