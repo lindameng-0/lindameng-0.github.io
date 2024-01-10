@@ -22,8 +22,6 @@
 
       <script type="module">
 
-        const kalman = new GPSKalmanFilter();
-
         class GPSKalmanFilter {
           // Decay in m/s - 3 is a good number for walking pace, 
           // ideally change decay to 11 m/s for travel at 40kmh
@@ -138,6 +136,7 @@
           }
         }
 
+        const kalman = new GPSKalmanFilter(); 
         window.addEventListener("load", WatchLocation);
 
         // Create an array of objects to store the locations and their names
