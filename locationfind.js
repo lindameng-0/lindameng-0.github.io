@@ -1,43 +1,34 @@
-navigator.geolocation.getCurrentPosition(function () {}, function () {}, {});
+import { GPSKalmanFilter } from 'kalman-filter-js';
 
-function haversineDistance(lat1, lon1, lat2, lon2) {
-  // Convert degrees to radians
-  lat1 = lat1 * Math.PI / 180;
-  lon1 = lon1 * Math.PI / 180;
-  lat2 = lat2 * Math.PI / 180;
-  lon2 = lon2 * Math.PI / 180;
-
-  // Calculate the differences between the coordinates
-  let dLat = lat2 - lat1;
-  let dLon = lon2 - lon1;
-
-  // Apply the haversine formula
-  let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(lat1) * Math.cos(lat2) *
-          Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  let c = 2 * Math.asin(Math.sqrt(a));
-  let r = 6371; // Radius of the Earth in km
-  let d = r * c; // Distance in km
-  return d;
-}
+const kalman = new GPSKalmanFilter();
 
 function WatchLocation() {
   if (navigator.geolocation) {
     // Call watchPosition once to start tracking the user location
     const watchID = navigator.geolocation.watchPosition(
       function(position) {
+        // Get the raw GPS data
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
+        const acc = position.coords.accuracy;
+        const timems = position.timestamp;
 
-        console.log(`Latitude: ${lat}, longitude: ${lng}`);
-        showwatchPosition(position); // Call showPosition to update the coordinates on the screen
+        // Apply the Kalman filter to the GPS data
+        let kalmanXY = kalman.filter(lat, lng, acc, timems);
+
+        // Get the smoothed coordinates from the filter output
+        const smoothLat = kalmanXY[0];
+        const smoothLng = kalmanXY[1];
+
+        console.log(`Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}`);
+        showwatchPosition(smoothLat, smoothLng); // Call showPosition to update the coordinates on the screen using the smoothed values
       },
       function(error) {
         console.error("Error getting user location:", error);
       },
       {
         enableHighAccuracy:true,
-        timeout: 5000,      // 5 seconds timeout
+        timeout: 5000,
         maximumAge: 0
       }
     );
@@ -47,10 +38,10 @@ function WatchLocation() {
   }
 }
 
-function showwatchPosition(position) {
+function showwatchPosition(smoothLat, smoothLng) {
     const x = document.getElementById("coordswatch");
   
-    x.innerHTML = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+    x.innerHTML = `Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}`;
   
     // Loop over the locations array and calculate the distance to each one
     for (let location of locations) {
@@ -59,7 +50,7 @@ function showwatchPosition(position) {
       const lon2 = location.lon;
   
       // Calculate the distance using the haversine formula
-      const distance = haversineDistance(position.coords.latitude, position.coords.longitude, lat2, lon2);
+      const distance = haversineDistance(smoothLat, smoothLng, lat2, lon2);
   
       // Convert the distance from km to m
       const distanceInMeters = distance * 1000;
@@ -71,6 +62,3 @@ function showwatchPosition(position) {
   }
 
   window.addEventListener("load", WatchLocation);
-
-  //v7
-
