@@ -2,13 +2,14 @@
 <html>
 
 <head>
-  <title>Geolocation Example</title>
+  <!-- https://james2moore.github.io/geo/ -->
+  <title>Geolocation Direct Distance</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
 </head>
 
 <body>
-  <h1>v8.0<h1>
+  <h1>v2.3<h1>
 
       <h2>Current Location</h2>
       <p id="coordswatch">Waiting for location...</p>
@@ -21,6 +22,30 @@
      -->
 
       <script type="module">
+        const asin = Math.asin
+        const cos = Math.cos
+        const sin = Math.sin
+        const sqrt = Math.sqrt
+        const PI = Math.PI
+
+        // equatorial mean radius of Earth (in meters)
+        const R = 6378137
+
+        function squared(x) { return x * x }
+        function toRad(x) { return x * PI / 180.0 }
+        function hav(x) {
+          return squared(sin(x / 2))
+        }
+
+        // hav(theta) = hav(bLat - aLat) + cos(aLat) * cos(bLat) * hav(bLon - aLon)
+        function haversineDistance(a, b) {
+          const aLat = toRad(Array.isArray(a) ? a[1] : a.latitude ?? a.lat)
+          const bLat = toRad(Array.isArray(b) ? b[1] : b.latitude ?? b.lat)
+          const aLng = toRad(Array.isArray(a) ? a[0] : a.longitude ?? a.lng ?? a.lon)
+          const bLng = toRad(Array.isArray(b) ? b[0] : b.longitude ?? b.lng ?? b.lon)
+          const ht = hav(bLat - aLat) + cos(aLat) * cos(bLat) * hav(bLng - aLng)
+          return 2 * R * asin(sqrt(ht))
+        }
 
         class GPSKalmanFilter {
           // Decay in m/s - 3 is a good number for walking pace, 
@@ -43,7 +68,7 @@
           //
           filter(lat, lon, accuracy, timestampInMs) {
             if (accuracy < this.minAccuracy) accuracy = this.minAccuracy
-            //console.log('accuracy is',accuracy)
+            //console.log('accuracy is', accuracy)
 
             // if variance < 0, object is unitialised, so initialise with current values
             if (this.variance < 0) {
@@ -65,18 +90,17 @@
                 this.timestampInMs = timestampInMs
               }
               // TODO: USE VELOCITY INFORMATION HERE TO GET A BETTER ESTIMATE OF CURRENT POSITION ?
-
-
               // Kalman gain matrix K = Covarariance * Inverse(Covariance + MeasurementVariance)
               // NB: because K is dimensionless, it doesn't matter that variance has different units to lat and lon
               const _k = this.variance / (this.variance + (accuracy * accuracy))
               this.lat += _k * (lat - this.lat)
               this.lon += _k * (lon - this.lon)
+              // new Covarariance  matrix is (IdentityMatrix - K) * Covarariance 
+              this.variance = (1 - _k) * this.variance
             }
+            return [this.lat, this.lon]
           }
-        }
-        // new Covarariance  m
-
+        }//class 
         function WatchLocation() {
           if (navigator.geolocation) {
             // Call watchPosition once to start tracking the user location
@@ -95,7 +119,7 @@
                 const smoothLat = kalmanXY[0];
                 const smoothLng = kalmanXY[1];
 
-                console.log(`Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}`);
+                //console.log(`Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}, accuracy: ${acc}, timeS: ${Math.floor(timems / 1000)}`);
                 showwatchPosition(smoothLat, smoothLng); // Call showPosition to update the coordinates on the screen using the smoothed values
               },
               function (error) {
@@ -113,35 +137,10 @@
           }
         }
 
-        function showwatchPosition(smoothLat, smoothLng) {
-          const x = document.getElementById("coordswatch");
-
-          x.innerHTML = `Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}`;
-
-          // Loop over the locations array and calculate the distance to each one
-          for (let location of locations) {
-            // Get the fixed point coordinates
-            const lat2 = location.lat;
-            const lon2 = location.lon;
-
-            // Calculate the distance using the haversine formula
-            const distance = haversineDistance(smoothLat, smoothLng, lat2, lon2);
-
-            // Convert the distance from km to m
-            const distanceInMeters = distance * 1000;
-
-            // Display the distance in a new element with the location name
-            const y = document.getElementById(`distancewatch-${location.name}`);
-            y.innerHTML = `<h2>${location.name}</h2><p>Distance: ${distanceInMeters.toFixed(2)} m</p>`; // Round the distance to 2 decimal places and use tags
-          }
-        }
-
-        const kalman = new GPSKalmanFilter(); 
-        window.addEventListener("load", WatchLocation);
-
         // Create an array of objects to store the locations and their names
         //format: {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
         const locations = [
+          { name: "Boracay", lat: 11.9652483, lon: 121.92837},
           { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
           { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
           { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
@@ -156,6 +155,32 @@
           { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
         ];
 
+        function showwatchPosition(smoothLat, smoothLng) {
+          const x = document.getElementById("coordswatch");
+          x.innerHTML = `Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}`;
+          // Loop over the locations array and calculate the distance to each one
+          for (let location of locations) {
+            // Get the fixed point coordinates
+            const lat2 = location.lat;
+            const lon2 = location.lon;
+
+            // Calculate the distance using the haversine formula
+            const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
+            x.innerHTML = `Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}`;
+
+            // Convert the distance from km to m
+            //const distanceInMeters = distance * 1000;
+            const distanceInMeters = distance * 1;
+
+            // Display the distance in a new element with the location name
+            const y = document.getElementById(`distancewatch-${location.name}`);
+            y.innerHTML = `<h2>${location.name}</h2><p>Distance: ${distanceInMeters.toFixed(2)} m</p>`; // Round the distance to 2 decimal places and use tags
+          }
+        }
+
+        const kalman = new GPSKalmanFilter();
+        window.addEventListener("load", WatchLocation);
+
         // Loop over the locations array and create the HTML elements for each one
         for (let location of locations) {
           // Create a new h1 element with the location name and coordinates
@@ -166,7 +191,7 @@
           const outer = document.getElementById("outer");
           const distancewatch = document.createElement("div");
           distancewatch.id = `distancewatch-${location.name}`;
-          // outer.appendChild(h1); // Comment out or delete this line to remove the haversine distance titles
+          outer.appendChild(h1); // Comment out or delete this line to remove the haversine distance titles
           outer.appendChild(distancewatch);
         }
       </script>
