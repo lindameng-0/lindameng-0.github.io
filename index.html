@@ -140,7 +140,7 @@
         // Create an array of objects to store the locations and their names
         //format: {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
         const locations = [
-          { name: "Alf Museum 2F Back Door", lat: 34.1234296, lon: -117.7388527 },
+          { name: "Alf Museum 2F Back Door v2", lat: 34.1234296, lon: -117.7388527 },
           { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
           { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
           { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
@@ -193,46 +193,6 @@
           outer.appendChild(distancewatch);
         }
       </script>
-
-<ul id="locations-list">
-  <li><a href="#" onclick="showLocation('Alf Museum 2F Back Door')">Alf Museum 2F Back Door</a></li>
-  <!-- add more locations here -->
-</ul>
-
-<div id="location-info"></div>
-<script>
-  function showLocation(name) {
-    // get the location object from the locations array by name
-    let location = locations.find(loc => loc.name === name);
-    // get the smoothed latitude and longitude from the coordswatch element
-    let smoothLat = parseFloat(document.getElementById("coordswatch").textContent.split(": ")[1].split(", ")[0]);
-    let smoothLng = parseFloat(document.getElementById("coordswatch").textContent.split(": ")[2]);
-    // calculate the distance and the angle using the haversineDistance and getAngle functions
-    let distance = haversineDistance([smoothLat, smoothLng], [location.lat, location.lon]);
-    let angle = getAngle(smoothLat, smoothLng, location.lat, location.lon);
-    // update the location-info element with the name, distance, and arrow
-    document.getElementById("location-info").innerHTML = `
-      <h2>${name}</h2>
-      <p>Distance: ${distance.toFixed(2)} m</p>
-      <span id="arrow" style="transform: rotate(${angle}deg);">→</span>
-    `;
-  }
-</script>
-<script>
-  function getAngle(lat1, lon1, lat2, lon2) {
-  // convert the coordinates to radians
-  lat1 = toRad(lat1);
-  lon1 = toRad(lon1);
-  lat2 = toRad(lat2);
-  lon2 = toRad(lon2);
-  // calculate the angle using the Math.atan2 method
-  let angle = Math.atan2(Math.sin(lon2 - lon1) * Math.cos(lat2), Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1));
-  // convert the angle to degrees
-  angle = angle * 180 / Math.PI;
-  // return the angle
-  return angle;
-}
-</script>
 
 </body>
 </html>
