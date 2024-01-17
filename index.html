@@ -3,16 +3,30 @@
 
 <head>
   <!-- https://james2moore.github.io/geo/ -->
-  <title>Geolocation Direct Distance</title>
+  <!-- https://github.com/nzjs/kalman-filter-js?tab=readme-ov-file -->
+  <!-- https://stackoverflow.com/questions/49696561/access-compass-data-in-mobile-web-html5 方向问题-->
+  <!--
+    ➣ U+27A3 &#10147;
+    ⮚ U+2B9A &#11162;
+    ➤ U+27A4 &#10148;
+    🠖 U+1F816 &#129046;
+    🡲 U+1F872 &#129138; 
+  -->
+  <!--
+    使用json文件保存数据，读取坐标并判断在哪个学校坐标，自动读取学校的数据文件并显示  
+  -->
+  <title>Geolocation Example</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
 </head>
 
 <body>
-  <h1>v2.3<h1>
+  <h1>v123<h1>
 
       <h2>Current Location</h2>
+      <span>disc<span style="display:inline-block;transform:rotate(45deg);font-size: 3em;">&#10148;</span></span>
       <p id="coordswatch">Waiting for location...</p>
+      <p id="orientationWatch">orientation: </p>
       <div id="outer"></div>
       <!--
     <script src="kalman_gps.js"></script>
@@ -22,6 +36,41 @@
      -->
 
       <script type="module">
+        window.addEventListener("compassneedscalibration", function (event) {
+          alert('Your compass needs calibration, please move with your device towards the number 8');
+          event.preventDefault();
+        }, true)
+
+        let lastAlpha = 0;
+        function WatchOrientation(event) {
+          lastAlpha = 360 - event.alpha;
+          orientationWatch.textContent = `Orientation: ${Math.round(360 - lastAlpha)}, ${event.absolute}, ${event.webkitCompassHeading}`
+        }
+        window.addEventListener('deviceorientationabsolute', WatchOrientation)
+
+        // Converts from degrees to radians.
+        function toRadians(degrees) {
+          return degrees * Math.PI / 180;
+        };
+
+        // Converts from radians to degrees.
+        function toDegrees(radians) {
+          return radians * 180 / Math.PI;
+        }
+
+
+        function bearing(startLat, startLng, destLat, destLng) {
+          startLat = toRadians(startLat);
+          startLng = toRadians(startLng);
+          destLat = toRadians(destLat);
+          destLng = toRadians(destLng);
+          let y = Math.sin(destLng - startLng) * Math.cos(destLat);
+          let x = Math.cos(startLat) * Math.sin(destLat) - Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+          let brng = Math.atan2(y, x);
+          brng = toDegrees(brng);
+          return (brng + 360) % 360;
+        }
+
         const asin = Math.asin
         const cos = Math.cos
         const sin = Math.sin
@@ -51,7 +100,7 @@
           // Decay in m/s - 3 is a good number for walking pace, 
           // ideally change decay to 11 m/s for travel at 40kmh
           // or change to 25 m/s for travel at 100kmh
-          constructor(decay = 3) {
+          constructor(decay = 1) {
             this.decay = decay
             this.variance = -1
             this.minAccuracy = 1
@@ -120,7 +169,7 @@
                 const smoothLng = kalmanXY[1];
 
                 //console.log(`Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}, accuracy: ${acc}, timeS: ${Math.floor(timems / 1000)}`);
-                showwatchPosition(smoothLat, smoothLng); // Call showPosition to update the coordinates on the screen using the smoothed values
+                showwatchPosition(smoothLat, smoothLng, acc); // Call showPosition to update the coordinates on the screen using the smoothed values
               },
               function (error) {
                 console.error("Error getting user location:", error);
@@ -140,7 +189,8 @@
         // Create an array of objects to store the locations and their names
         //format: {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
         const locations = [
-          { name: "Alf Museum 2F Back Door v2", lat: 34.1234296, lon: -117.7388527 },
+          { name: "Hiagens", lat: 11.965600, lon: 121.928390 },
+          { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
           { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
           { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
           { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
@@ -154,9 +204,9 @@
           { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
         ];
 
-        function showwatchPosition(smoothLat, smoothLng) {
+        function showwatchPosition(smoothLat, smoothLng, acc) {
           const x = document.getElementById("coordswatch");
-          x.innerHTML = `Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}`;
+          x.innerHTML = `lat: ${smoothLat.toFixed(5)}, lon: ${smoothLng.toFixed(5)}, acc: ${acc.toFixed(2)}`;
           // Loop over the locations array and calculate the distance to each one
           for (let location of locations) {
             // Get the fixed point coordinates
@@ -165,15 +215,15 @@
 
             // Calculate the distance using the haversine formula
             const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
-            x.innerHTML = `Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}`;
 
             // Convert the distance from km to m
             //const distanceInMeters = distance * 1000;
             const distanceInMeters = distance * 1;
 
+            const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
             // Display the distance in a new element with the location name
             const y = document.getElementById(`distancewatch-${location.name}`);
-            y.innerHTML = `<h2>${location.name}</h2><p>Distance: ${distanceInMeters.toFixed(2)} m</p>`; // Round the distance to 2 decimal places and use tags
+            y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha-90}deg)">&#10148;</span></span>`; // Round the distance to 2 decimal places and use tags
           }
         }
 
@@ -195,4 +245,5 @@
       </script>
 
 </body>
+
 </html>
