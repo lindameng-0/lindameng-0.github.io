@@ -239,10 +239,25 @@
           }
         }
 
+        const ranges = {
+          webb_schools: [
+            [34.129938, -117.742799],
+            [34.128788, -117.739827],
+            [34.128788, -117.742598],
+            [34.127339, -117.736260],
+            [34.127339, -117.742472],
+            [34.124354, -117.733227],
+            [34.124354, -117.740821],
+            [34.121610, -117.735081]
+          ],
+          // other ranges ...
+        };
+
+
         // Create an array of objects to store the locations and their names
         //format: {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
 
-        const locations = {
+        const webb_locations = {
           alf_museum: [
             { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
             { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
@@ -311,28 +326,53 @@
         const kalman = new GPSKalmanFilter();
         window.addEventListener("load", WatchLocation);
 
+        // A function that returns true if the point is inside the polygon, false otherwise
+        function isPointInPolygon(point, polygon) {
+          // point is an array of two numbers [lat, lon]
+          // polygon is an array of four arrays of two numbers each [[lat1, lon1], [lat2, lon2], [lat3, lon3], [lat4, lon4]]
+          let inside = false;
+          let x = point[1]; // lon
+          let y = point[0]; // lat
+          for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            let xi = polygon[i][1]; // lon
+            let yi = polygon[i][0]; // lat
+            let xj = polygon[j][1]; // lon
+            let yj = polygon[j][0]; // lat
+            let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+          }
+          return inside;
+        }
+
+        // A function that creates the home page with the filtered locations
         function createHomePage() {
           const outer = document.getElementById("outer");
           outer.innerHTML = "";
-          for (let key in locations) {
-            const details = document.createElement("details");
-            const summary = document.createElement("summary");
-            summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
-              return " " + letter.toUpperCase();
-            });
-
-            details.appendChild(summary);
-            const ul = document.createElement("ul");
-            for (let item of locations[key]) {
-              const li = document.createElement("li"); // create a list item for each item
-              li.textContent = item.name;
-              li.addEventListener("click", function () {
-                showDetailPage(item);
+          for (let key in webb_locations) {
+            // Get the range coordinates for the current key
+            let range = ranges[key];
+            // Check if the user is in the range
+            if (isPointInPolygon([smoothLat, smoothLng], range)) {
+              // Create the details element for the locations in the range
+              const details = document.createElement("details");
+              const summary = document.createElement("summary");
+              summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
+                return " " + letter.toUpperCase();
               });
-              ul.appendChild(li);
+              details.appendChild(summary);
+              const ul = document.createElement("ul");
+              for (let item of webb_locations[key]) {
+                const li = document.createElement("li");
+                li.textContent = item.name;
+                li.addEventListener("click", function () {
+                  showDetailPage(item);
+                });
+                ul.appendChild(li);
+              }
+              details.appendChild(ul);
+              // Append the details element to the outer element
+              outer.appendChild(details);
             }
-            details.appendChild(ul); // append the list to the details
-            outer.appendChild(details); // append the details to the outer div
           }
           currentPage = "home";
           currentLocation = null;
@@ -357,6 +397,8 @@
 
         // Call to create the home page when the webpage loads
         createHomePage();
+
+
       </script>
 
 </body>
