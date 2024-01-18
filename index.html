@@ -206,70 +206,223 @@
         function WatchLocation() {
           if (navigator.geolocation) {
             // Call watchPosition once to start tracking the user location
-            const watchID = navigator.geolocation.watchPosition(
-              function (position) {
-                // Get the raw GPS data
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                const acc = position.coords.accuracy;
-                const timems = position.timestamp;
+            let lastCheckPlaceTime = 0//最后检查地点的时间
+            let lastPlace//最后显示的地点
+            let lastUpdateLocationTime = 0//最后刷新距离的时间
+            const kalman = new GPSKalmanFilter()
 
-                // Apply the Kalman filter to the GPS data
-                let kalmanXY = kalman.filter(lat, lng, acc, timems);
-
-                // Get the smoothed coordinates from the filter output
-                const smoothLat = kalmanXY[0];
-                const smoothLng = kalmanXY[1];
-
-                //console.log(`Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}, accuracy: ${acc}, timeS: ${Math.floor(timems / 1000)}`);
-                showwatchPosition(smoothLat, smoothLng, acc); // Call showPosition to update the coordinates on the screen using the smoothed values
-              },
-              function (error) {
-                console.error("Error getting user location:", error);
-              },
-              {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
+            function viewCoord(parent, locations) {
+              const ulEle = document.createElement('ul')
+              for (const location of locations) {
+                const liEle = document.createElement('li')
+                if (Array.isArray(location)) {
+                  //如果是数组，则是直接地点
+                  liEle.lat = location[1]
+                  liEle.lon = location[2]
+                  const labelEle = document.createElement('label')
+                  labelEle.textContent = location[0]
+                  liEle.appendChild(labelEle)
+                  const spanEle = document.createElement('span')
+                  liEle.appendChild(spanEle)
+                  const bEle = document.createElement('b')
+                  bEle.innerHTML = '&#10148;'
+                  liEle.appendChild(bEle)
+                } else {
+                  //如果是对象，则是地点分类
+                  const detailsEle = document.createElement('details')
+                  if (location.name) {
+                    const summaryEle = document.createElement('summary')
+                    summaryEle.textContent = location.name
+                    detailsEle.appendChild(summaryEle)
+                  }
+                  liEle.appendChild(detailsEle)
+                  if (location.location) {
+                    viewCoord(detailsEle, location.location)
+                  }
+                }
+                ulEle.appendChild(liEle)
               }
-            );
+              parent.appendChild(ulEle)
+            }
+
+            //刷新地点信息
+            function updatePlace() {
+              //console.log('updatePlace', lastPlace)
+              //移除所有子元素
+              while (placeList.lastChild) {
+                placeList.removeChild(placeList.lastChild)
+              }
+              if (lastPlace) {
+                viewCoord(placeList, lastPlace.location)
+              }
+            }
+
+            //debug place
+            //lastPlace = PLACES[0]
+            //updatePlace()
+
+            //刷新距离
+            function updateLocation(lat, lng) {
+              const lis = placeList.querySelectorAll('#placeList li')
+              for (const liEle of lis) {
+                //如有坐标则更新距离,没有坐标是details,不用处理
+                if (liEle.lat && liEle.lon) {
+                  const distance = haversineDistance([lat, lng], [liEle.lat, liEle.lon])
+                  liEle.children[1].textContent = distance.toFixed(0) + 'm'
+                  const bearingVal = bearing(lat, lng, liEle.lat, liEle.lon)
+                  //liEle.children[2].style = `display:inline-block;font-size:.8rem;margin-inline-start:.5rem;transform:rotate(${bearingVal - lastAlpha - 90}deg)`
+                  liEle.children[2].style = `transform:rotate(${bearingVal - lastAlpha - 90}deg)`
+                }
+              }
+            }
+
+            let lastAlpha = 0//最后记录的手机方向
+            addEventListener('compassneedscalibration', event => {
+              alert('Your compass needs calibration, please move with your device in a figure 8')
+              event.preventDefault()
+            }, true)
+
+            addEventListener('deviceorientationabsolute', event => {
+              lastAlpha = 360 - event.alpha
+            })
+
+            navigator.geolocation.watchPosition(position => {
+              // Get the raw GPS data
+              const timems = position.timestamp
+              // Apply the Kalman filter to the GPS data
+              const kalmanXY = kalman.filter(position.coords.latitude, position.coords.longitude, position.coords.accuracy, timems);
+              // Get the smoothed coordinates from the filter output
+              const lat = kalmanXY[0]
+              const lng = kalmanXY[1]
+              //console.log('watchPosition', lat, lng, acc, timems)
+              if (timems - lastCheckPlaceTime > 3000) {//如果上一次检查已经过去3秒，则再次检查；即每3秒检查一次
+                let findPlace//找到的地点
+                for (const place of PLACES) {//遍历所有地点
+                  for (const boundary of place.boundary) {//遍历地点的所有矩形框
+                    //如果在地点的边界内
+                    if (lat < boundary[0] && lat > boundary[2] && lng > boundary[1] && lng < boundary[3]) {
+                      //note:lat左上角比右下角数值大
+                      //如果最后显示的地点不是此地点，则表示进入了某地点
+                      findPlace = place
+                      break
+                    }
+                  }//for boundary
+                  if (findPlace) break//如果已找到地点，则强制结束
+                }//for place
+                lastCheckPlaceTime = timems//更新检查时间
+                //如果最后地点不等于找到的地点，则更新地点信息
+                if (lastPlace != findPlace) {
+                  lastPlace = findPlace
+                  updatePlace()
+                }
+              }
+              if (timems - lastUpdateLocationTime > 500) {//如果上一次检查已经过去300ms，则再次刷新
+                updateLocation(lat, lng)
+                lastUpdateLocationTime = timems
+              }
+            }, error => {
+              errorText.textContent = `Error getting user location: ${error}`
+            }, {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0
+            })
           } else {
-            const x = document.getElementById("coordswatch");
-            x.innerHTML = "Geolocation is not supported by this browser.";
+            errorText.textContent = 'Geolocation is not supported by this browser.'
           }
         }
 
         // Create an array of objects to store the locations and their names
         //format: {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
 
-        const webb_locations = {
-          alf_museum: [
-            { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
-            { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
-            { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
-          ],
-
-          south_hutch: [
-            { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
-            { name: "South Hutch Room 414", lat: 34.1239599, lon: -117.7382364 },
-            { name: "South Hutch Room 413", lat: 34.1239646, lon: -117.7382196 },
-          ],
-
-          nelson: [
-            { name: "Nelson Room 103", lat: 34.1239755, lon: -117.77395852 },
-            { name: "Liu Cheung Theater", lat: 34.1240131, lon: -117.7395663 },
-          ],
-
-          library: [
-            { name: "Library Door", lat: 34.1238431, lon: -117.7390556 },
-            { name: "Library Room North, 3, South", lat: 34.1239534, lon: -117.7388547 },
-            { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
-          ],
-
-          other: [
-            { name: "Price Dining Hall", lat: 34.1241543, lon: -117.7398563 },
-          ],
-        };
+        const PLACES = [
+          {
+            "name": "The Webb Schools",
+            "boundary": [
+              [34.129938, -117.742799, 34.128788, -117.739827],
+              [34.128788, -117.742598, 34.127339, -117.736260],
+              [34.127339, -117.742472, 34.124354, -117.733227],
+              [34.124354, -117.740821, 34.121610, -117.735081]
+            ],
+            "location": [
+              ["Price Dining Hall", 34.1241543, -117.7398563],
+              {
+                "name": "alf_museum:",
+                "location": [
+                  ["Alf Museum 2F Back Door", 34.1233579, -117.7390518],
+                  ["Alf Museum Front Door", 34.1235657, -117.7389072],
+                  ["Alf Museum 2F Bathroom", 34.1235885, -117.7390106],
+                ]
+              },
+              {
+                "name": "south_hutch",
+                "location": [
+                  ["South Hutch Front Door", 34.1239831, -117.7384314],
+                  ["South Hutch Room 414", 34.1239599, -117.7382364],
+                  ["South Hutch Room 413", 34.1239646, -117.7382196],
+                ]
+              },
+              {
+                "name": "nelson",
+                "location": [
+                  ["Nelson Room 103", 34.1239755, -117.77395852],
+                  ["Liu Cheung Theater", 34.1240131, -117.7395663],
+                  ["", ,],
+                ]
+              },
+              {
+                "name": "Library",
+                "location": [
+                  ["Library Door", 34.1238431, -117.7390556],
+                  ["Library Room North, 3, South", 34.1239534, -117.7388547],
+                  ["Library Room 2", 34.1240165, -117.7387937],
+                ]
+              }
+            ]
+          },
+          {
+            "name": "La Verne Towne Center",
+            "boundary": [
+              [34.113511, -117.763343, 34.107986, -117.757244]
+            ],
+            "location": [
+              ["Parking lot entrance and exit", 34.111508, -117.760086],
+              ['West parking lot', 34.111069, -117.761092],
+              ["East parking lot", 34.110423, -117.759410],
+              ["Bus station, Stop ID:1347", 34.111779, -117.761104],
+              ["Target Grocery", 34.110009, -117.759385],
+              ["Staples(Office supply store)", 34.110757, -117.761217],
+              ["McDonald's", 34.112866, -117.762204]
+            ]
+          },
+          {
+            "name": "Boracay Island",
+            "boundary": [
+              [11.998052, 121.902291, 11.940964, 121.952756]
+            ],
+            "location": [
+              ["S1 Beach", 11.968732, 121.918694],
+              ["S2 Beach", 11.960763, 121.924721],
+              ["S3 Beach", 11.953299, 121.929169],
+              ["Bulabog Beach", 11.965783, 121.928838],
+              {
+                "name": "Restaurant",
+                "location": [
+                  ["McDonald's", 11.962948, 121.926563],
+                  ["The Pig Out Bistro", 11.965298, 121.923524]
+                ]
+              },
+              {
+                "name": "Supermarket",
+                "location": [
+                  ["Budget Mart", 11.963232267224607, 121.92638565938344],
+                  ["Robinsons Supermarket", 11.975197752900698, 121.9184145513564],
+                  ["CityMall Boracay", 11.979172241037892, 121.92073167663847],
+                ]
+              }
+            ]
+          },
+        ]//PLACES
 
         function showwatchPosition(smoothLat, smoothLng, acc) {
           const x = document.getElementById("coordswatch");
@@ -357,7 +510,7 @@
 
         // Call to create the home page when the webpage loads
         createHomePage();
-        
+
       </script>
 
 </body>
