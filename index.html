@@ -148,11 +148,14 @@
           { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
         ];
 
+        let isHomePage = true;
+
         function showwatchPosition(smoothLat, smoothLng, acc) {
           const x = document.getElementById("coordswatch");
           x.innerHTML = `lat: ${smoothLat.toFixed(5)}, lon: ${smoothLng.toFixed(5)}, acc: ${acc.toFixed(2)}`;
 
           let currentLocation = null;
+
           function getLocationByName(name) {
             for (let location of locations) {
               if (location.name === name) {
@@ -163,13 +166,16 @@
           }
 
           function showHomePage() {
+            isHomePage = true;
             const outer = document.getElementById("outer");
             outer.innerHTML = "";
             const homePage = document.createElement("div");
             homePage.id = "homePage";
+
             const homeHeading = document.createElement("h2");
             homeHeading.textContent = "Choose a location to view:";
             homePage.appendChild(homeHeading);
+
             const locationList = document.createElement("ul");
             for (let location of locations) {
               const locationItem = document.createElement("li");
@@ -189,13 +195,16 @@
           }
 
           function showLocationPage() {
+            isHomePage = false;
             const outer = document.getElementById("outer");
             outer.innerHTML = "";
             const locationPage = document.createElement("div");
             locationPage.id = "locationPage";
+
             const locationHeading = document.createElement("h2");
             locationHeading.textContent = currentLocation.name;
             locationPage.appendChild(locationHeading);
+
             const locationSpan = document.createElement("span");
             const lat2 = currentLocation.lat;
             const lon2 = currentLocation.lon;
@@ -207,21 +216,22 @@
 
             const homeButton = document.createElement("button");
             homeButton.textContent = "Home";
-
             homeButton.addEventListener("click", function () {
               showHomePage();
             });
             locationPage.appendChild(homeButton);
+
             outer.appendChild(locationPage);
           }
 
-          showHomePage();
+          if (isHomePage) {
+            showHomePage();
+          }
         }
 
         const kalman = new GPSKalmanFilter();
         window.addEventListener("load", WatchLocation);
       </script>
-
 </body>
 
 </html>
