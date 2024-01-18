@@ -233,32 +233,35 @@
 
         // Create an array of objects to store the locations and their names
         //format: {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
-        const alf_museum = [
-          { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
-          { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
-          { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
-        ];
 
-        const south_hutch = [
-          { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
-          { name: "South Hutch Room 414", lat: 34.1239599, lon: -117.7382364 },
-          { name: "South Hutch Room 413", lat: 34.1239646, lon: -117.7382196 },
-        ];
+        const locations = {
+          alf_museum: [
+            { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
+            { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
+            { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
+          ],
 
-        const nelson = [
-          { name: "Nelson Room 103", lat: 34.1239755, lon: -117.77395852 },
-          { name: "Liu Cheung Theater", lat: 34.1240131, lon: -117.7395663 },
-        ];
+          south_hutch: [
+            { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
+            { name: "South Hutch Room 414", lat: 34.1239599, lon: -117.7382364 },
+            { name: "South Hutch Room 413", lat: 34.1239646, lon: -117.7382196 },
+          ],
 
-        const library = [
-          { name: "Library Door", lat: 34.1238431, lon: -117.7390556 },
-          { name: "Library Room North, 3, South", lat: 34.1239534, lon: -117.7388547 },
-          { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
-        ];
+          nelson: [
+            { name: "Nelson Room 103", lat: 34.1239755, lon: -117.77395852 },
+            { name: "Liu Cheung Theater", lat: 34.1240131, lon: -117.7395663 },
+          ],
 
-        const other = [
-          { name: "Price Dining Hall", lat: 34.1241543, lon: -117.7398563 },
-        ]
+          library: [
+            { name: "Library Door", lat: 34.1238431, lon: -117.7390556 },
+            { name: "Library Room North, 3, South", lat: 34.1239534, lon: -117.7388547 },
+            { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
+          ],
+
+          other: [
+            { name: "Price Dining Hall", lat: 34.1241543, lon: -117.7398563 },
+          ],
+        };
 
         function showwatchPosition(smoothLat, smoothLng, acc) {
           const x = document.getElementById("coordswatch");
@@ -303,19 +306,15 @@
         function createHomePage() {
           const outer = document.getElementById("outer");
           outer.innerHTML = "";
-          const locations = [alf_museum, south_hutch, nelson, library, other];
-          for (let index = 0; index < locations.length; index++) {
+          for (let key in locations) {
             const details = document.createElement("details");
             const summary = document.createElement("summary");
-            summary.textContent = Object.keys(locations[index])[0].replace(
-              /_(\w)/g,
-              function (match, letter) {
-                return " " + letter.toUpperCase();
-              }
-            );
+            summary.textContent = key.replace(/_(\w)/g, function (match, letter) {
+              return " " + letter.toUpperCase();
+            });
             details.appendChild(summary);
             const ul = document.createElement("ul");
-            for (let item of locations[index]) {
+            for (let item of locations[key]) {
               const li = document.createElement("li"); // create a list item for each item
               li.textContent = item.name;
               li.addEventListener("click", function () {
