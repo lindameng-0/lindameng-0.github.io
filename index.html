@@ -5,7 +5,6 @@
   <title>Geolocation Example</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <style>
-    /* I have added some CSS styles to make the webpage look nicer */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -56,227 +55,259 @@
 </head>
 
 <body>
-  <h1>v1<h1>
+  <h1>v1</h1>
 
-      <h2>Current Location</h2>
-      <span>disc<span style="display:inline-block;transform:rotate(45deg);font-size: 3em;">➤</span></span>
-      <p id="coordswatch">Waiting for location...</p>
-      <p id="orientationWatch">orientation: </p>
-      <div id="outer"></div>
+  <h2>Current Location</h2>
+  <span>disc<span style="display:inline-block;transform:rotate(45deg);font-size: 3em;">➤</span></span>
+  <p id="coordswatch">Waiting for location...</p>
+  <p id="orientationWatch">orientation: </p>
+  <div id="outer"></div>
 
-      <button id="home-button">Home</button>
+  <button id="home-button">Home</button>
 
-      <script type="module">
-        // I have added some variables to keep track of the current page and location
-        let currentPage = "home"; // the current page, either "home" or "detail"
-        let currentLocation = null; // the current location object, or null if none
+  <script type="module">
+    // ➣ U+27A3 &#10147;
+    // ⮚ U+2B9A &#11162;
+    // ➤ U+27A4 &#10148;
+    // 🠖 U+1F816 &#129046;
+    // 🡲 U+1F872 &#129138;
 
-        window.addEventListener("compassneedscalibration", function (event) {
-          alert('Your compass needs calibration, please move with your device towards the number 8');
-          event.preventDefault();
-        }, true)
+    // 使用json文件保存数据，读取坐标并判断在哪个学校坐标，自动读取学校的数据文件并显示
 
-        let lastAlpha = 0;
+    window.addEventListener("compassneedscalibration", function (event) {
+      alert('Your compass needs calibration, please move with your device towards the number 8');
+      event.preventDefault();
+    }, true)
 
-        function WatchOrientation(event) {
-          lastAlpha = 360 - event.alpha;
-          orientationWatch.textContent = `Orientation: ${Math.round(360 - lastAlpha)}, ${event.absolute}, ${event.webkitCompassHeading}`
+    let lastAlpha = 0;
+
+    function WatchOrientation(event) {
+      lastAlpha = 360 - event.alpha;
+      orientationWatch.textContent = `Orientation: ${Math.round(360 - lastAlpha)}, ${event.absolute}, ${event.webkitCompassHeading}`
+    }
+    window.addEventListener('deviceorientationabsolute', WatchOrientation)
+
+    function toRadians(degrees) {
+      return degrees * Math.PI / 180;
+    };
+
+    function toDegrees(radians) {
+      return radians * 180 / Math.PI;
+    }
+
+    function bearing(startLat, startLng, destLat, destLng) {
+      startLat = toRadians(startLat);
+      startLng = toRadians(startLng);
+      destLat = toRadians(destLat);
+      destLng = toRadians(destLng);
+      let y = Math.sin(destLng - startLng) * Math.cos(destLat);
+      let x = Math.cos(startLat) * Math.sin(destLat) - Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+      let brng = Math.atan2(y, x);
+      brng = toDegrees(brng);
+      return (brng + 360) % 360;
+    }
+
+    const asin = Math.asin
+    const cos = Math.cos
+    const sin = Math.sin
+    const sqrt = Math.sqrt
+    const PI = Math.PI
+    const R = 6378137
+
+    function squared(x) { return x * x }
+    function toRad(x) { return x * PI / 180.0 }
+    function hav(x) {
+      return squared(sin(x / 2))
+    }
+
+    function haversineDistance(a, b) {
+      const aLat = toRad(Array.isArray(a) ? a[1] : a.latitude ?? a.lat)
+      const bLat = toRad(Array.isArray(b) ? b[1] : b.latitude ?? b.lat)
+      const aLng = toRad(Array.isArray(a) ? a[0] : a.longitude ?? a.lng ?? a.lon)
+      const bLng = toRad(Array.isArray(b) ? b[0] : b.longitude ?? b.lng ?? b.lon)
+      const ht = hav(bLat - aLat) + cos(aLat) * cos(bLat) * hav(bLng - aLng)
+      return 2 * R * asin(sqrt(ht))
+    }
+
+    class GPSKalmanFilter {
+      // Decay in m/s - 3 is a good number for walking pace, 
+      // ideally change decay to 11 m/s for travel at 40kmh
+      // or change to 25 m/s for travel at 100kmh
+      constructor(decay = 1) {
+        this.decay = decay
+        this.variance = -1
+        this.minAccuracy = 1
+      }
+
+      // Kalman filter processing for latitude and longitude
+      //
+      // lat = new measurement of latitude
+      // lon = new measurement of longitude
+      // accuracy = measurement of 1 standard deviation error in metres
+      // timestampInMs = time of measurement from geolocation service
+      // 
+      // This returns a new filtered X Y geolocation
+      //
+      filter(lat, lon, accuracy, timestampInMs) {
+        if (accuracy < this.minAccuracy) accuracy = this.minAccuracy
+
+        // if variance < 0, object is unitialised, so initialise with current values
+        if (this.variance < 0) {
+          this.timestampInMs = timestampInMs
+          this.lat = lat
+          this.lon = lon
+          this.variance = accuracy * accuracy
         }
-        window.addEventListener('deviceorientationabsolute', WatchOrientation)
 
-        function toRadians(degrees) {
-          return degrees * Math.PI / 180;
-        };
+        // else apply Kalman filter methodology
+        else {
+          const timeIncMs = timestampInMs - this.timestampInMs
 
-        function toDegrees(radians) {
-          return radians * 180 / Math.PI;
-        }
-
-        function bearing(startLat, startLng, destLat, destLng) {
-          startLat = toRadians(startLat);
-          startLng = toRadians(startLng);
-          destLat = toRadians(destLat);
-          destLng = toRadians(destLng);
-          let y = Math.sin(destLng - startLng) * Math.cos(destLat);
-          let x = Math.cos(startLat) * Math.sin(destLat) - Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
-          let brng = Math.atan2(y, x);
-          brng = toDegrees(brng);
-          return (brng + 360) % 360;
-        }
-
-        const asin = Math.asin
-        const cos = Math.cos
-        const sin = Math.sin
-        const sqrt = Math.sqrt
-        const PI = Math.PI
-        const R = 6378137
-
-        function squared(x) { return x * x }
-        function toRad(x) { return x * PI / 180.0 }
-        function hav(x) {
-          return squared(sin(x / 2))
-        }
-
-        function haversineDistance(a, b) {
-          const aLat = toRad(Array.isArray(a) ? a[1] : a.latitude ?? a.lat)
-          const bLat = toRad(Array.isArray(b) ? b[1] : b.latitude ?? b.lat)
-          const aLng = toRad(Array.isArray(a) ? a[0] : a.longitude ?? a.lng ?? a.lon)
-          const bLng = toRad(Array.isArray(b) ? b[0] : b.longitude ?? b.lng ?? b.lon)
-          const ht = hav(bLat - aLat) + cos(aLat) * cos(bLat) * hav(bLng - aLng)
-          return 2 * R * asin(sqrt(ht))
-        }
-
-        class GPSKalmanFilter {
-          constructor(decay = 1) {
-            this.decay = decay
-            this.variance = -1
-            this.minAccuracy = 1
+          // time has moved on, so the uncertainty in the current position increases
+          if (timeIncMs > 0) {
+            this.variance += (timeIncMs * this.decay * this.decay) / 1000
+            this.timestampInMs = timestampInMs
           }
+          // TODO: USE VELOCITY INFORMATION HERE TO GET A BETTER ESTIMATE OF CURRENT POSITION ?
+          // Kalman gain matrix K = Covarariance * Inverse(Covariance + MeasurementVariance)
+          // NB: because K is dimensionless, it doesn't matter that variance has different units to lat and lon
+          const _k = this.variance / (this.variance + (accuracy * accuracy))
+          this.lat += _k * (lat - this.lat)
+          this.lon += _k * (lon - this.lon)
+          // new Covarariance  matrix is (IdentityMatrix - K) * Covarariance 
+          this.variance = (1 - _k) * this.variance
+        }
+        return [this.lat, this.lon]
+      }
+    }
 
-          filter(lat, lon, accuracy, timestampInMs) {
-            if (accuracy < this.minAccuracy) accuracy = this.minAccuracy
+    // Function to watch the location
+    function WatchLocation() {
+      if (navigator.geolocation) {
+        // Watch the user's position
+        const watchID = navigator.geolocation.watchPosition(
+          function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const acc = position.coords.accuracy;
+            const timems = position.timestamp;
 
-            if (this.variance < 0) {
-              this.timestampInMs = timestampInMs
-              this.lat = lat
-              this.lon = lon
-              this.variance = accuracy * accuracy
-            } else {
-              const timeIncMs = timestampInMs - this.timestampInMs
+            // Apply Kalman filter to get a smoothed position
+            let kalmanXY = kalman.filter(lat, lng, acc, timems);
+            const smoothLat = kalmanXY[0];
+            const smoothLng = kalmanXY[1];
 
-              if (timeIncMs > 0) {
-                this.variance += (timeIncMs * this.decay * this.decay) / 1000
-                this.timestampInMs = timestampInMs
-              }
-              const _k = this.variance / (this.variance + (accuracy * accuracy))
-              this.lat += _k * (lat - this.lat)
-              this.lon += _k * (lon - this.lon)
-              this.variance = (1 - _k) * this.variance
-            }
-            return [this.lat, this.lon]
+            // Show the position on the webpage
+            showwatchPosition(smoothLat, smoothLng, acc);
+          },
+          function (error) {
+            console.error("Error getting user location:", error);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
           }
+        );
+      } else {
+        // Geolocation is not supported by the browser
+        const x = document.getElementById("coordswatch");
+        x.innerHTML = "Geolocation is not supported by this browser.";
+      }
+    }
+
+    // List of locations with their coordinates
+    const locations = [
+      { name: "Hiagens", lat: 11.965600, lon: 121.928390 },
+      { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
+      { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
+      { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
+      { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
+      { name: "South Hutch Room 414", lat: 34.1239599, lon: -117.7382364 },
+      { name: "South Hutch Room 413", lat: 34.1239646, lon: -117.7382196 },
+      { name: "Price Dining Hall", lat: 34.1241543, lon: -117.7398563 },
+      { name: "Nelson Room 103", lat: 34.1239755, lon: -117.77395852 },
+      { name: "Liu Cheung Theater", lat: 34.1240131, lon: -117.7395663 },
+      { name: "Library Door", lat: 34.1238431, lon: -117.7390556 },
+      { name: "Library Room North, 3, South", lat: 34.1239534, lon: -117.7388547 },
+      { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
+    ];
+
+    // Function to display the user's position
+    function showwatchPosition(smoothLat, smoothLng, acc) {
+      const x = document.getElementById("coordswatch");
+      x.innerHTML = `lat: ${smoothLat.toFixed(5)}, lon: ${smoothLng.toFixed(5)}, acc: ${acc.toFixed(2)}`;
+
+      // Check the current page and location
+      if (currentPage === "home") {
+        // If the current page is home, show all the locations
+        for (let location of locations) {
+          const lat2 = location.lat;
+          const lon2 = location.lon;
+
+          // Calculate distance and bearing
+          const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2])
+          const distanceInMeters = distance * 1;
+          const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
+
+          // Display distance and bearing on the webpage
+          const y = document.getElementById(`distancewatch-${location.name}`);
+          y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
         }
+      } else if (currentPage === "detail" && currentLocation) {
+        // If the current page is detail and there is a current location, show only that location
+        const lat2 = currentLocation.lat;
+        const lon2 = currentLocation.lon;
 
-        function WatchLocation() {
-          if (navigator.geolocation) {
-            const watchID = navigator.geolocation.watchPosition(
-              function (position) {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                const acc = position.coords.accuracy;
-                const timems = position.timestamp;
+        // Calculate distance and bearing
+        const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
+        const distanceInMeters = distance * 1;
+        const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
 
-                let kalmanXY = kalman.filter(lat, lng, acc, timems);
-                const smoothLat = kalmanXY[0];
-                const smoothLng = kalmanXY[1];
+        // Display distance and bearing on the webpage
+        const y = document.getElementById(`distancewatch-${currentLocation.name}`);
+        y.innerHTML = `<h2>${currentLocation.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+      }
+    }
 
-                showwatchPosition(smoothLat, smoothLng, acc);
-              },
-              function (error) {
-                console.error("Error getting user location:", error);
-              },
-              {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
-              }
-            );
-          } else {
-            const x = document.getElementById("coordswatch");
-            x.innerHTML = "Geolocation is not supported by this browser.";
-          }
-        }
+    // Kalman filter for GPS data
+    const kalman = new GPSKalmanFilter();
 
-        const locations = [
-          { name: "Hiagens", lat: 11.965600, lon: 121.928390 },
-          { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
-          { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
-          { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
-          { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
-          { name: "South Hutch Room 414", lat: 34.1239599, lon: -117.7382364 },
-          { name: "South Hutch Room 413", lat: 34.1239646, lon: -117.7382196 },
-          { name: "Price Dining Hall", lat: 34.1241543, lon: -117.7398563 },
-          { name: "Nelson Room 103", lat: 34.1239755, lon: -117.77395852 },
-          { name: "Liu Cheung Theater", lat: 34.1240131, lon: -117.7395663 },
-          { name: "Library Door", lat: 34.1238431, lon: -117.7390556 },
-          { name: "Library Room North, 3, South", lat: 34.1239534, lon: -117.7388547 },
-          { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
-        ];
-
-        function showwatchPosition(smoothLat, smoothLng, acc) {
-          const x = document.getElementById("coordswatch");
-          x.innerHTML = `lat: ${smoothLat.toFixed(5)}, lon: ${smoothLng.toFixed(5)}, acc: ${acc.toFixed(2)}`;
-
-          // I have added a condition to check the current page and location
-          if (currentPage === "home") {
-            // If the current page is home, show all the locations
-            for (let location of locations) {
-              const lat2 = location.lat;
-              const lon2 = location.lon;
-
-              const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2])
-              const distanceInMeters = distance * 1;
-
-              const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
-
-              const y = document.getElementById(`distancewatch-${location.name}`);
-              y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
-            }
-          } else if (currentPage === "detail" && currentLocation) {
-            // If the current page is detail and there is a current location, show only that location
-            const lat2 = currentLocation.lat;
-            const lon2 = currentLocation.lon;
-
-            const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
-            const distanceInMeters = distance * 1;
-
-            const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
-
-            const y = document.getElementById(`distancewatch-${currentLocation.name}`);
-            y.innerHTML = `<h2>${currentLocation.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
-          }
-        }
-
-        const kalman = new GPSKalmanFilter();
-        window.addEventListener("load", WatchLocation);
-
-        // I have added a function to create the home page with a list of locations
-        function createHomePage() {
-          const outer = document.getElementById("outer");
-          outer.innerHTML = ""; // clear the previous content
-          const ul = document.createElement("ul"); // create an unordered list
-          for (let location of locations) {
-            const li = document.createElement("li"); // create a list item for each location
-            li.textContent = location.name; // set the text to the location name
-            li.addEventListener("click", function () { // add a click event listener
-              showDetailPage(location); // show the detail page for that location
-            });
-            ul.appendChild(li); // append the list item to the list
-          }
-          outer.appendChild(ul); // append the list to the outer div
-          currentPage = "home"; // update the current page
-          currentLocation = null; // reset the current location
-          document.getElementById("home-button").style.display = "none"; // hide the home button
-        }
-
-        // I have added a function to create the detail page for a specific location
-        function showDetailPage(location) {
-          const outer = document.getElementById("outer");
-          outer.innerHTML = ""; // clear the previous content
-          const distancewatch = document.createElement("div"); // create a div for the location
-          distancewatch.id = `distancewatch-${location.name}`; // set the id to the location name
-          outer.appendChild(distancewatch); // append the div to the outer div
-          currentPage = "detail"; // update the current page
-          currentLocation = location; // update the current location
-          document.getElementById("home-button").style.display = "block"; // show the home button
-        }
-
-        // I have added a click event listener to the home button
-        document.getElementById("home-button").addEventListener("click", function () {
-          createHomePage(); // create the home page when the button is clicked
+    // Function to create the home page with a list of locations
+    function createHomePage() {
+      const outer = document.getElementById("outer");
+      outer.innerHTML = ""; // Clear the previous content
+      const ul = document.createElement("ul"); // Create an unordered list
+      for (let location of locations) {
+        const li = document.createElement("li"); // Create a list item for each location
+        li.textContent = location.name; // Set the text to the location name
+        li.addEventListener("click", function () { // Add a click event listener
+          showDetailPage(location); // Show the detail page for that location
         });
+        ul.appendChild(li); // Append the list item to the list
+      }
+      outer.appendChild(ul); // Append the list to the outer div
+      currentPage = "home"; // Update the current page
+      currentLocation = null; // Reset the current location
+      document.getElementById("home-button").style.display = "none"; // Hide the home button
+    }
 
-        // I have added a call to create the home page when the webpage loads
+    // Function to create the detail page for a specific location
+    function showDetailPage(location) {
+      const outer = document.getElementById("outer");
+      outer.innerHTML = ""; // Clear the previous content
+      const distancewatch = document.createElement("div"); // Create a div for the location
+      distancewatch.id = `distancewatch-${location.name}`; // Set the id to the location name
+      outer.appendChild(distancewatch); // Append the div to the outer div
+      currentPage = "detail"; // Update the current page
+      currentLocation = location; // Update the current location
+      document.getElementById("home-button").style.display = "block"; // Show the home button
+    }
+
+    // Click event listener for the home button
+    document.getElementById("home-button").addEventListener("click", function () {
+      createHomePage(); // Create the home page when the button is clicked
+        });
         createHomePage();
       </script>
 
