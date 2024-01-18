@@ -74,11 +74,10 @@
     }
 
     summary {
-      margin: 5px; 
-      padding: 5px; 
+      margin: 5px;
+      padding: 5px;
       line-height: 1.5;
     }
-
   </style>
 </head>
 
@@ -284,21 +283,24 @@
           // Loop over the locations array and calculate the distance to each one
           if (currentPage === "home") {
             // If the current page is home, show all the locations
-            for (let location of webb_locations) {
-              const lat2 = location.lat;
-              const lon2 = location.lon;
+            for (let property in webb_locations) {
+              let locations = webb_locations[property];
+              for (let location of locations) {
+                const lat2 = location.lat;
+                const lon2 = location.lon;
 
-              // Loop over the locations array and calculate the distance to each one
-              const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2])
+                // Loop over the locations array and calculate the distance to each one
+                const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2])
 
-              // Convert the distance from km to m
-              //const distanceInMeters = distance * 1000;
-              const distanceInMeters = distance * 1;
+                // Convert the distance from km to m
+                //const distanceInMeters = distance * 1000;
+                const distanceInMeters = distance * 1;
 
-              const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
-              // Display the distance in a new element with the location name
-              const y = null;
-              y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+                const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
+                // Display the distance in a new element with the location name
+                const y = null;
+                y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+              }
             }
           } else if (currentPage === "detail" && currentLocation) {
             // If the current page is detail and there is a current location, show only that location
@@ -364,7 +366,7 @@
 
         // Call to create the home page when the webpage loads
         createHomePage();
-        
+
       </script>
 
 </body>
