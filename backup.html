@@ -213,7 +213,7 @@
             const lat2 = location.lat;
             const lon2 = location.lon;
 
-            // Calculate the distance using the haversine formula
+            // Loop over the locations array and calculate the distance to each one
             const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
 
             // Convert the distance from km to m
