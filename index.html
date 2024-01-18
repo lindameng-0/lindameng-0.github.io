@@ -307,7 +307,7 @@
           for (let location of locations) {
             const details = document.createElement("details"); // create a details element
             const summary = document.createElement("summary"); // create a summary element
-            summary.textContent = location[0].name.split(" ")[0]; // set the summary text to the first word of the location name
+            summary.textContent = location.name; // set the summary text to the first word of the location name
             details.appendChild(summary); 
             const ul = document.createElement("ul"); 
             for (let item of location) {
@@ -322,7 +322,7 @@
             outer.appendChild(details); // append the details to the outer div
           }
           currentPage = "home"; 
-          currentLocation = null; 
+          currentLocation = null;
           document.getElementById("home-button").style.display = "none"; 
         }
 
