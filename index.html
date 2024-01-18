@@ -309,9 +309,10 @@
           for (let key in locations) {
             const details = document.createElement("details");
             const summary = document.createElement("summary");
-            summary.textContent = key.replace(/_(\w)/g, function (match, letter) {
+            summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
               return " " + letter.toUpperCase();
             });
+
             details.appendChild(summary);
             const ul = document.createElement("ul");
             for (let item of locations[key]) {
