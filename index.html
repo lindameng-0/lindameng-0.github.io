@@ -304,15 +304,18 @@
           const outer = document.getElementById("outer");
           outer.innerHTML = "";
           const locations = [alf_museum, south_hutch, nelson, library, other];
-          for (let location of locations) {
+          for (let index = 0; index < locations.length; index++) {
             const details = document.createElement("details");
             const summary = document.createElement("summary");
-            summary.textContent = location[0].name.replace(/_(\w)/g, function (match, letter) {
-              return " " + letter.toUpperCase();
-            });
+            summary.textContent = Object.keys(locations[index])[0].replace(
+              /_(\w)/g,
+              function (match, letter) {
+                return " " + letter.toUpperCase();
+              }
+            );
             details.appendChild(summary);
             const ul = document.createElement("ul");
-            for (let item of location) {
+            for (let item of locations[index]) {
               const li = document.createElement("li"); // create a list item for each item
               li.textContent = item.name;
               li.addEventListener("click", function () {
@@ -327,7 +330,6 @@
           currentLocation = null;
           document.getElementById("home-button").style.display = "none";
         }
-
 
         function showDetailPage(location) {
           const outer = document.getElementById("outer");
