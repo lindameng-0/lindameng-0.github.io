@@ -203,6 +203,9 @@
           }
         }//class 
 
+        let smoothLat;
+        let smoothLng;
+        
         function WatchLocation() {
           if (navigator.geolocation) {
             // Call watchPosition once to start tracking the user location
@@ -291,7 +294,7 @@
           // Loop over the locations array and calculate the distance to each one
           if (currentPage === "home") {
             // If the current page is home, show all the locations
-            for (let location of locations) {
+            for (let location of webb_locations) {
               const lat2 = location.lat;
               const lon2 = location.lon;
 
