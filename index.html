@@ -294,6 +294,38 @@
 
         function WatchLocation() {
           if (navigator.geolocation) {
+            let lastCheckPlaceTime = 0//最后检查地点的时间
+            let lastPlace//最后显示的地点
+            let lastUpdateLocationTime = 0//最后刷新距离的时间
+            function updatePlace() {
+              //console.log('updatePlace', lastPlace)
+              //移除所有子元素
+              while (placeList.lastChild) {
+                placeList.removeChild(placeList.lastChild)
+              }
+              if (lastPlace) {
+                viewCoord(placeList, lastPlace.location)
+              }
+            }
+
+            //debug place
+            //lastPlace = PLACES[0]
+            //updatePlace()
+
+            //刷新距离
+            function updateLocation(lat, lng) {
+              const lis = placeList.querySelectorAll('#placeList li')
+              for (const liEle of lis) {
+                //如有坐标则更新距离,没有坐标是details,不用处理
+                if (liEle.lat && liEle.lon) {
+                  const distance = haversineDistance([lat, lng], [liEle.lat, liEle.lon])
+                  liEle.children[1].textContent = distance.toFixed(0) + 'm'
+                  const bearingVal = bearing(lat, lng, liEle.lat, liEle.lon)
+                  //liEle.children[2].style = `display:inline-block;font-size:.8rem;margin-inline-start:.5rem;transform:rotate(${bearingVal - lastAlpha - 90}deg)`
+                  liEle.children[2].style = `transform:rotate(${bearingVal - lastAlpha - 90}deg)`
+                }
+              }
+            }
             // Call watchPosition once to start tracking the user location
             navigator.geolocation.watchPosition(position => {
               // Get the raw GPS data
