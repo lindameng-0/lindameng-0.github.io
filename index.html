@@ -268,7 +268,7 @@
 
               const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
               // Display the distance in a new element with the location name
-              const y = document.getElementById(`distancewatch-${location.name}`);
+              const y =  null;
               y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
             }
           } else if (currentPage === "detail" && currentLocation) {
