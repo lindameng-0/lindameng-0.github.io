@@ -303,14 +303,12 @@
         function createHomePage() {
           const outer = document.getElementById("outer");
           outer.innerHTML = "";
-          const locations = [alf_museum, south_hutch, nelson, library, other]; // create an array of all locations
+          const locations = [alf_museum, south_hutch, nelson, library, other];
           for (let location of locations) {
-            const details = document.createElement("details"); // create a details element
-            const summary = document.createElement("summary"); // create a summary element
-            summary.textContent = location[0].name.split(" ")[0]; // set the summary text to the first word of the location name
-            // Change this line to assign the entire location name to the summary
-            summary.textContent = location[0].name.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (match, p1) {
-              return p1.toUpperCase();
+            const details = document.createElement("details");
+            const summary = document.createElement("summary");
+            summary.textContent = location[0].name.replace(/_(\w)/g, function (match, letter) {
+              return " " + letter.toUpperCase();
             });
             details.appendChild(summary);
             const ul = document.createElement("ul");
