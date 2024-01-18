@@ -203,9 +203,6 @@
           }
         }//class 
 
-        let smoothLat;
-        let smoothLng;
-        
         function WatchLocation() {
           if (navigator.geolocation) {
             // Call watchPosition once to start tracking the user location
@@ -241,20 +238,6 @@
             x.innerHTML = "Geolocation is not supported by this browser.";
           }
         }
-
-        const ranges = {
-          webb: [
-            [34.129938, -117.742799, 34.128788, -117.739827],
-            [34.128788, -117.742598, 34.127339, -117.736260],
-            [34.127339, -117.742472, 34.124354, -117.733227],
-            [34.124354, -117.740821, 34.121610, -117.735081],
-          ],
-          // You can add more ranges here, for example:
-          target: [
-            // etc...
-          ],
-        };
-
 
         // Create an array of objects to store the locations and their names
         //format: {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
@@ -294,7 +277,7 @@
           // Loop over the locations array and calculate the distance to each one
           if (currentPage === "home") {
             // If the current page is home, show all the locations
-            for (let location of webb_locations) {
+            for (let location of locations) {
               const lat2 = location.lat;
               const lon2 = location.lon;
 
@@ -328,64 +311,33 @@
         const kalman = new GPSKalmanFilter();
         window.addEventListener("load", WatchLocation);
 
-        function isInsideRectangle(point, rectangle) {
-          const [lat, lon] = point;
-          const [lat1, lon1, lat2, lon2] = rectangle;
-          return lat >= Math.min(lat1, lat2) && lat <= Math.max(lat1, lat2) && lon >= Math.min(lon1, lon2) && lon <= Math.max(lon1, lon2);
-        }
-
-        // A function that checks if a point is inside any of the ranges
-        function isInsideRange(point, ranges) {
-          for (let range of Object.values(ranges)) {
-            for (let rectangle of range) {
-              if (isInsideRectangle(point, rectangle)) {
-                return true;
-              }
-            }
-          }
-          return false;
-        }
-
         function createHomePage() {
           const outer = document.getElementById("outer");
           outer.innerHTML = "";
-          // Get the user's current location
-          const userLocation = [smoothLat, smoothLng];
-          // Check if the user is inside any of the ranges
-          const insideRange = isInsideRange(userLocation, ranges);
-          // If the user is inside any of the ranges, show the locations
-          if (insideRange) {
-            for (let key in webb_locations) {
-              const details = document.createElement("details");
-              const summary = document.createElement("summary");
-              summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
-                return " " + letter.toUpperCase();
-              });
+          for (let key in webb_locations) {
+            const details = document.createElement("details");
+            const summary = document.createElement("summary");
+            summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
+              return " " + letter.toUpperCase();
+            });
 
-              details.appendChild(summary);
-              const ul = document.createElement("ul");
-              for (let item of webb_locations[key]) {
-                const li = document.createElement("li");
-                li.textContent = item.name;
-                li.addEventListener("click", function () {
-                  showDetailPage(item);
-                });
-                ul.appendChild(li);
-              }
-              details.appendChild(ul);
-              outer.appendChild(details);
+            details.appendChild(summary);
+            const ul = document.createElement("ul");
+            for (let item of webb_locations[key]) {
+              const li = document.createElement("li"); // create a list item for each item
+              li.textContent = item.name;
+              li.addEventListener("click", function () {
+                showDetailPage(item);
+              });
+              ul.appendChild(li);
             }
-          } else {
-            // If the user is not inside any of the ranges, show a message
-            const message = document.createElement("p");
-            message.textContent = "You are not in any of the ranges. Please move closer to see the locations.";
-            outer.appendChild(message);
+            details.appendChild(ul); // append the list to the details
+            outer.appendChild(details); // append the details to the outer div
           }
           currentPage = "home";
           currentLocation = null;
           document.getElementById("home-button").style.display = "none";
         }
-
 
         function showDetailPage(location) {
           const outer = document.getElementById("outer");
@@ -405,7 +357,7 @@
 
         // Call to create the home page when the webpage loads
         createHomePage();
-
+        
       </script>
 
 </body>
