@@ -27,12 +27,12 @@
     h1 {
       background-color: #333;
       color: white;
-      margin:0;
+      margin: 0;
       padding: 10px;
     }
 
     h2 {
-      margin: 10px ;
+      margin: 10px;
     }
 
     ul {
@@ -249,7 +249,7 @@
           { name: "Nelson Room 103", lat: 34.1239755, lon: -117.77395852 },
           { name: "Liu Cheung Theater", lat: 34.1240131, lon: -117.7395663 },
         ];
-        
+
         const library = [
           { name: "Library Door", lat: 34.1238431, lon: -117.7390556 },
           { name: "Library Room North, 3, South", lat: 34.1239534, lon: -117.7388547 },
@@ -279,7 +279,7 @@
 
               const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
               // Display the distance in a new element with the location name
-              const y =  null;
+              const y = null;
               y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
             }
           } else if (currentPage === "detail" && currentLocation) {
@@ -303,19 +303,27 @@
         function createHomePage() {
           const outer = document.getElementById("outer");
           outer.innerHTML = ""; 
-          const ul = document.createElement("ul"); // create an unordered list
+          const locations = [alf_museum, south_hutch, nelson, library, other]; // create an array of all locations
           for (let location of locations) {
-            const li = document.createElement("li"); // create a list item for each location
-            li.textContent = location.name; // set the text to the location name
-            li.addEventListener("click", function () { // add a click event listener
-              showDetailPage(location); // show the detail page for that location
-            });
-            ul.appendChild(li); // append the list item to the list
+            const details = document.createElement("details"); // create a details element
+            const summary = document.createElement("summary"); // create a summary element
+            summary.textContent = location[0].name.split(" ")[0]; // set the summary text to the first word of the location name
+            details.appendChild(summary); 
+            const ul = document.createElement("ul"); 
+            for (let item of location) {
+              const li = document.createElement("li"); // create a list item for each item
+              li.textContent = item.name; 
+              li.addEventListener("click", function () { 
+                showDetailPage(item); 
+              });
+              ul.appendChild(li); 
+            }
+            details.appendChild(ul); // append the list to the details
+            outer.appendChild(details); // append the details to the outer div
           }
-          outer.appendChild(ul); // append the list to the outer div
-          currentPage = "home";
-          currentLocation = null; // reset the current location
-          document.getElementById("home-button").style.display = "none"; // hide the home button
+          currentPage = "home"; 
+          currentLocation = null; 
+          document.getElementById("home-button").style.display = "none"; 
         }
 
         function showDetailPage(location) {
