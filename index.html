@@ -68,10 +68,9 @@
 </head>
 
 <body>
-  <h1>v123<h1>
-
+  <h1>v2<h1>
       <h2>Current Location</h2>
-      <span>disc<span style="display:inline-block;transform:rotate(45deg);font-size: 3em;">➤</span></span>
+      <!--<span>disc<span style="display:inline-block;transform:rotate(45deg);font-size: 3em;">➤</span></span>-->
       <p id="coordswatch">Waiting for location...</p>
       <p id="orientationWatch">orientation: </p>
       <div id="outer"></div>
@@ -79,12 +78,11 @@
       <button id="home-button">Home</button>
 
       <script type="module">
-        // I have added some variables to keep track of the current page and location
-        let currentPage = "home"; // the current page, either "home" or "detail"
+        let currentPage = "home"; // the current page
         let currentLocation = null; // the current location object, or null if none
 
         window.addEventListener("compassneedscalibration", function (event) {
-          alert('Your compass needs calibration, please move with your device towards the number 8');
+          alert('Your compass needs calibration, please move with your device in a figure 8');
           event.preventDefault();
         }, true)
 
@@ -96,12 +94,12 @@
         }
         window.addEventListener('deviceorientationabsolute', WatchOrientation)
 
-        // Converts from degrees to radians.
+        // Converts from degrees to radians
         function toRadians(degrees) {
           return degrees * Math.PI / 180;
         };
 
-        // Converts from radians to degrees.
+        // Converts from radians to degrees
         function toDegrees(radians) {
           return radians * 180 / Math.PI;
         }
