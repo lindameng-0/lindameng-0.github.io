@@ -240,17 +240,16 @@
         }
 
         const ranges = {
-          webb_schools: [
-            [34.129938, -117.742799],
-            [34.128788, -117.739827],
-            [34.128788, -117.742598],
-            [34.127339, -117.736260],
-            [34.127339, -117.742472],
-            [34.124354, -117.733227],
-            [34.124354, -117.740821],
-            [34.121610, -117.735081]
+          webb: [
+            [34.129938, -117.742799, 34.128788, -117.739827],
+            [34.128788, -117.742598, 34.127339, -117.736260],
+            [34.127339, -117.742472, 34.124354, -117.733227],
+            [34.124354, -117.740821, 34.121610, -117.735081],
           ],
-          // other ranges ...
+          // You can add more ranges here, for example:
+          target: [
+            // etc...
+          ],
         };
 
 
@@ -326,39 +325,40 @@
         const kalman = new GPSKalmanFilter();
         window.addEventListener("load", WatchLocation);
 
-        // A function that returns true if the point is inside the polygon, false otherwise
-        function isPointInPolygon(point, polygon) {
-          // point is an array of two numbers [lat, lon]
-          // polygon is an array of four arrays of two numbers each [[lat1, lon1], [lat2, lon2], [lat3, lon3], [lat4, lon4]]
-          let inside = false;
-          let x = point[1]; // lon
-          let y = point[0]; // lat
-          for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-            let xi = polygon[i][1]; // lon
-            let yi = polygon[i][0]; // lat
-            let xj = polygon[j][1]; // lon
-            let yj = polygon[j][0]; // lat
-            let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-            if (intersect) inside = !inside;
-          }
-          return inside;
+        function isInsideRectangle(point, rectangle) {
+          const [lat, lon] = point;
+          const [lat1, lon1, lat2, lon2] = rectangle;
+          return lat >= Math.min(lat1, lat2) && lat <= Math.max(lat1, lat2) && lon >= Math.min(lon1, lon2) && lon <= Math.max(lon1, lon2);
         }
 
-        // A function that creates the home page with the filtered locations
+        // A function that checks if a point is inside any of the ranges
+        function isInsideRange(point, ranges) {
+          for (let range of Object.values(ranges)) {
+            for (let rectangle of range) {
+              if (isInsideRectangle(point, rectangle)) {
+                return true;
+              }
+            }
+          }
+          return false;
+        }
+
         function createHomePage() {
           const outer = document.getElementById("outer");
           outer.innerHTML = "";
-          for (let key in webb_locations) {
-            // Get the range coordinates for the current key
-            let range = ranges[key];
-            // Check if the user is in the range
-            if (isPointInPolygon([smoothLat, smoothLng], range)) {
-              // Create the details element for the locations in the range
+          // Get the user's current location
+          const userLocation = [smoothLat, smoothLng];
+          // Check if the user is inside any of the ranges
+          const insideRange = isInsideRange(userLocation, ranges);
+          // If the user is inside any of the ranges, show the locations
+          if (insideRange) {
+            for (let key in webb_locations) {
               const details = document.createElement("details");
               const summary = document.createElement("summary");
               summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
                 return " " + letter.toUpperCase();
               });
+
               details.appendChild(summary);
               const ul = document.createElement("ul");
               for (let item of webb_locations[key]) {
@@ -370,14 +370,19 @@
                 ul.appendChild(li);
               }
               details.appendChild(ul);
-              // Append the details element to the outer element
               outer.appendChild(details);
             }
+          } else {
+            // If the user is not inside any of the ranges, show a message
+            const message = document.createElement("p");
+            message.textContent = "You are not in any of the ranges. Please move closer to see the locations.";
+            outer.appendChild(message);
           }
           currentPage = "home";
           currentLocation = null;
           document.getElementById("home-button").style.display = "none";
         }
+
 
         function showDetailPage(location) {
           const outer = document.getElementById("outer");
@@ -397,7 +402,6 @@
 
         // Call to create the home page when the webpage loads
         createHomePage();
-
 
       </script>
 
