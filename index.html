@@ -90,95 +90,7 @@
 
       <button id="home-button">Home</button>
       <script type="module">
-        const PLACES = [
-          {
-            "name": "The Webb Schools",
-            "boundary": [
-              [34.129938, -117.742799, 34.128788, -117.739827],
-              [34.128788, -117.742598, 34.127339, -117.736260],
-              [34.127339, -117.742472, 34.124354, -117.733227],
-              [34.124354, -117.740821, 34.121610, -117.735081]
-            ],
-            "location": [
-              ["Price Dining Hall", 34.1241543, -117.7398563],
-              {
-                "name": "alf_museum",
-                "location": [
-                  ["Alf Museum 2F Back Door", 34.1233579, -117.7390518],
-                  ["Alf Museum Front Door", 34.1235657, -117.7389072],
-                  ["Alf Museum 2F Bathroom", 34.1235885, -117.7390106],
-                ]
-              },
-              {
-                "name": "south_hutch",
-                "location": [
-                  ["South Hutch Front Door", 34.1239831, -117.7384314],
-                  ["South Hutch Room 414", 34.1239599, -117.7382364],
-                  ["South Hutch Room 413", 34.1239646, -117.7382196],
-                ]
-              },
-              {
-                "name": "nelson",
-                "location": [
-                  ["Nelson Room 103", 34.1239755, -117.77395852],
-                  ["Liu Cheung Theater", 34.1240131, -117.7395663],
-                  ["", ,],
-                ]
-              },
-              {
-                "name": "Library",
-                "location": [
-                  ["Library Door", 34.1238431, -117.7390556],
-                  ["Library Room North, 3, South", 34.1239534, -117.7388547],
-                  ["Library Room 2", 34.1240165, -117.7387937],
-                ]
-              }
-            ]
-          },
-          {
-            "name": "La Verne Towne Center",
-            "boundary": [
-              [34.113511, -117.763343, 34.107986, -117.757244]
-            ],
-            "location": [
-              ["Parking lot entrance and exit", 34.111508, -117.760086],
-              ['West parking lot', 34.111069, -117.761092],
-              ["East parking lot", 34.110423, -117.759410],
-              ["Bus station, Stop ID:1347", 34.111779, -117.761104],
-              ["Target Grocery", 34.110009, -117.759385],
-              ["Staples(Office supply store)", 34.110757, -117.761217],
-              ["McDonald's", 34.112866, -117.762204]
-            ]
-          },
-          {
-            "name": "Boracay Island",
-            "boundary": [
-              [11.998052, 121.902291, 11.940964, 121.952756]
-            ],
-            "location": [
-              ["S1 Beach", 11.968732, 121.918694],
-              ["S2 Beach", 11.960763, 121.924721],
-              ["S3 Beach", 11.953299, 121.929169],
-              ["Bulabog Beach", 11.965783, 121.928838],
-              {
-                "name": "Restaurant",
-                "location": [
-                  ["McDonald's", 11.962948, 121.926563],
-                  ["The Pig Out Bistro", 11.965298, 121.923524]
-                ]
-              },
-              {
-                "name": "Supermarket",
-                "location": [
-                  ["Budget Mart", 11.963232267224607, 121.92638565938344],
-                  ["Robinsons Supermarket", 11.975197752900698, 121.9184145513564],
-                  ["CityMall Boracay", 11.979172241037892, 121.92073167663847],
-                ]
-              }
-            ]
-          },
-        ];
-
+        // Function to check if the user is inside the specified area
         function isInsideArea(lat, lon, area) {
           for (const boundary of area.boundary) {
             if (lat < boundary[0] && lat > boundary[2] && lon > boundary[1] && lon < boundary[3]) {
@@ -188,30 +100,36 @@
           return false;
         }
 
+        // Function to update location information based on user's position
         function updateLocationInfo(lat, lon) {
           const outer = document.getElementById("outer");
           const homeButton = document.getElementById("home-button");
 
-          for (let place of PLACES) {
-            const locations = place.location;
+          for (let key in webb_locations) {
+            const locations = webb_locations[key];
             for (let location of locations) {
-              const lat2 = location[1];
-              const lon2 = location[2];
+              const lat2 = location.lat;
+              const lon2 = location.lon;
 
-              if (isInsideArea(lat, lon, place)) {
+              // Check if the user is inside the specified area
+              if (isInsideArea(lat, lon, location)) {
                 const distance = haversineDistance([lat, lon], [lat2, lon2]);
                 const distanceInMeters = distance * 1;
 
                 const bearingVal = bearing(lat, lon, lat2, lon2);
 
-                const distanceWatch = document.getElementById(`distancewatch-${location[0]}`);
-                distanceWatch.innerHTML = `<h2>${location[0]}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+                // Display the distance and bearing information
+                const distanceWatch = document.getElementById(`distancewatch-${location.name}`);
+                distanceWatch.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
 
+                // Update the current location
                 currentLocation = location;
 
+                // Show the home button
                 homeButton.style.display = "block";
               } else {
-                const distanceWatch = document.getElementById(`distancewatch-${location[0]}`);
+                // If the user is outside the area, hide the distance information
+                const distanceWatch = document.getElementById(`distancewatch-${location.name}`);
                 distanceWatch.innerHTML = '';
               }
             }
@@ -371,62 +289,108 @@
           }
         }
 
+        // Create an array of objects to store the locations and their names
+        //format: {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
+
+        const webb_locations = {
+          alf_museum: [
+            { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
+            { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
+            { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
+          ],
+
+          south_hutch: [
+            { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
+            { name: "South Hutch Room 414", lat: 34.1239599, lon: -117.7382364 },
+            { name: "South Hutch Room 413", lat: 34.1239646, lon: -117.7382196 },
+          ],
+
+          nelson: [
+            { name: "Nelson Room 103", lat: 34.1239755, lon: -117.77395852 },
+            { name: "Liu Cheung Theater", lat: 34.1240131, lon: -117.7395663 },
+          ],
+
+          library: [
+            { name: "Library Door", lat: 34.1238431, lon: -117.7390556 },
+            { name: "Library Room North, 3, South", lat: 34.1239534, lon: -117.7388547 },
+            { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
+          ],
+
+          other: [
+            { name: "Price Dining Hall", lat: 34.1241543, lon: -117.7398563 },
+          ],
+        };
+
         function showwatchPosition(smoothLat, smoothLng, acc) {
           const x = document.getElementById("coordswatch");
           x.innerHTML = `lat: ${smoothLat.toFixed(5)}, lon: ${smoothLng.toFixed(5)}, acc: ${acc.toFixed(2)}`;
+          // Loop over the locations array and calculate the distance to each one
           if (currentPage === "home") {
-            for (let place of PLACES) {
-              for (let location of place.location) {
-                const lat2 = location[1];
-                const lon2 = location[2];
-                const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
+            // If the current page is home, show all the locations
+            for (let property in webb_locations) {
+              let locations = webb_locations[property];
+              for (let location of locations) {
+                const lat2 = location.lat;
+                const lon2 = location.lon;
+
+                // Loop over the locations array and calculate the distance to each one
+                const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2])
+
+                // Convert the distance from km to m
+                //const distanceInMeters = distance * 1000;
                 const distanceInMeters = distance * 1;
-                const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2);
-                const y = null; // replace? you sure its null?
-                y.innerHTML = `<h2>${location[0]}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+
+                const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
+                // Display the distance in a new element with the location name
+                const y = null;
+                y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
               }
             }
           } else if (currentPage === "detail" && currentLocation) {
-            const lat2 = currentLocation[1];
-            const lon2 = currentLocation[2];
+            // If the current page is detail and there is a current location, show only that location
+            const lat2 = currentLocation.lat;
+            const lon2 = currentLocation.lon;
+
             const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
             const distanceInMeters = distance * 1;
-            const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2);
-            const y = document.getElementById(`distancewatch-${currentLocation[0]}`);
-            y.innerHTML = `<h2>${currentLocation[0]}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+
+            const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
+
+            const y = document.getElementById(`distancewatch-${currentLocation.name}`);
+            y.innerHTML = `<h2>${currentLocation.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
           }
         }
+
         const kalman = new GPSKalmanFilter();
         window.addEventListener("load", WatchLocation);
 
         function createHomePage() {
           const outer = document.getElementById("outer");
           outer.innerHTML = "";
-          for (let place of PLACES) {
+          for (let key in webb_locations) {
             const details = document.createElement("details");
             const summary = document.createElement("summary");
-            summary.textContent = place.name[0].toUpperCase() + place.name.slice(1).replace(/_(\w)/g, function (match, letter) {
+            summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
               return " " + letter.toUpperCase();
             });
 
             details.appendChild(summary);
             const ul = document.createElement("ul");
-            for (let item of place.location) {
-              const li = document.createElement("li");
-              li.textContent = item[0];
+            for (let item of webb_locations[key]) {
+              const li = document.createElement("li"); // create a list item for each item
+              li.textContent = item.name;
               li.addEventListener("click", function () {
                 showDetailPage(item);
               });
               ul.appendChild(li);
             }
-            details.appendChild(ul);
-            outer.appendChild(details);
+            details.appendChild(ul); // append the list to the details
+            outer.appendChild(details); // append the details to the outer div
           }
           currentPage = "home";
           currentLocation = null;
           document.getElementById("home-button").style.display = "none";
         }
-
 
         function showDetailPage(location) {
           const outer = document.getElementById("outer");
