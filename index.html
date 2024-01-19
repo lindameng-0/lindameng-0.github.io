@@ -385,8 +385,8 @@
           // Loop over the locations array and calculate the distance to each one
           if (currentPage === "home") {
             // If the current page is home, show all the locations
-            for (let property in webb_locations) {
-              let locations = webb_locations[property];
+            for (let property in PLACES) {
+              let locations = PLACES[property];
               for (let location of locations) {
                 const lat2 = location.lat;
                 const lon2 = location.lon;
@@ -425,7 +425,7 @@
         function createHomePage() {
           const outer = document.getElementById("outer");
           outer.innerHTML = "";
-          for (let key in webb_locations) {
+          for (let key in PLACES) {
             const details = document.createElement("details");
             const summary = document.createElement("summary");
             summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
@@ -434,7 +434,7 @@
 
             details.appendChild(summary);
             const ul = document.createElement("ul");
-            for (let item of webb_locations[key]) {
+            for (let item of PLACES[key]) {
               const li = document.createElement("li"); // create a list item for each item
               li.textContent = item.name;
               li.addEventListener("click", function () {
