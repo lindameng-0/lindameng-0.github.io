@@ -90,6 +90,51 @@
 
       <button id="home-button">Home</button>
       <script type="module">
+        // Function to check if the user is inside the specified area
+        function isInsideArea(lat, lon, area) {
+          for (const boundary of area.boundary) {
+            if (lat < boundary[0] && lat > boundary[2] && lon > boundary[1] && lon < boundary[3]) {
+              return true;
+            }
+          }
+          return false;
+        }
+
+        // Function to update location information based on user's position
+        function updateLocationInfo(lat, lon) {
+          const outer = document.getElementById("outer");
+          const homeButton = document.getElementById("home-button");
+
+          for (let key in webb_locations) {
+            const locations = webb_locations[key];
+            for (let location of locations) {
+              const lat2 = location.lat;
+              const lon2 = location.lon;
+
+              // Check if the user is inside the specified area
+              if (isInsideArea(lat, lon, location)) {
+                const distance = haversineDistance([lat, lon], [lat2, lon2]);
+                const distanceInMeters = distance * 1;
+
+                const bearingVal = bearing(lat, lon, lat2, lon2);
+
+                // Display the distance and bearing information
+                const distanceWatch = document.getElementById(`distancewatch-${location.name}`);
+                distanceWatch.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+
+                // Update the current location
+                currentLocation = location;
+
+                // Show the home button
+                homeButton.style.display = "block";
+              } else {
+                // If the user is outside the area, hide the distance information
+                const distanceWatch = document.getElementById(`distancewatch-${location.name}`);
+                distanceWatch.innerHTML = '';
+              }
+            }
+          }
+        }
         let currentPage = "home"; // the current page
         let currentLocation = null; // the current location object, or null if none
 
