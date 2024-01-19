@@ -374,73 +374,59 @@
         function showwatchPosition(smoothLat, smoothLng, acc) {
           const x = document.getElementById("coordswatch");
           x.innerHTML = `lat: ${smoothLat.toFixed(5)}, lon: ${smoothLng.toFixed(5)}, acc: ${acc.toFixed(2)}`;
-          // Loop over the locations array and calculate the distance to each one
           if (currentPage === "home") {
-            // If the current page is home, show all the locations
-            for (let property in webb_locations) {
-              let locations = webb_locations[property];
-              for (let location of locations) {
-                const lat2 = location.lat;
-                const lon2 = location.lon;
-
-                // Loop over the locations array and calculate the distance to each one
-                const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2])
-
-                // Convert the distance from km to m
-                //const distanceInMeters = distance * 1000;
+            for (let place of PLACES) {
+              for (let location of place.location) {
+                const lat2 = location[1];
+                const lon2 = location[2];
+                const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
                 const distanceInMeters = distance * 1;
-
-                const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
-                // Display the distance in a new element with the location name
-                const y = null;
-                y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+                const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2);
+                const y = null; // replace? you sure its null?
+                y.innerHTML = `<h2>${location[0]}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
               }
             }
           } else if (currentPage === "detail" && currentLocation) {
-            // If the current page is detail and there is a current location, show only that location
-            const lat2 = currentLocation.lat;
-            const lon2 = currentLocation.lon;
-
+            const lat2 = currentLocation[1];
+            const lon2 = currentLocation[2];
             const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
             const distanceInMeters = distance * 1;
-
-            const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
-
-            const y = document.getElementById(`distancewatch-${currentLocation.name}`);
-            y.innerHTML = `<h2>${currentLocation.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+            const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2);
+            const y = document.getElementById(`distancewatch-${currentLocation[0]}`);
+            y.innerHTML = `<h2>${currentLocation[0]}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
           }
         }
-
         const kalman = new GPSKalmanFilter();
         window.addEventListener("load", WatchLocation);
 
         function createHomePage() {
           const outer = document.getElementById("outer");
           outer.innerHTML = "";
-          for (let key in webb_locations) {
+          for (let place of PLACES) {
             const details = document.createElement("details");
             const summary = document.createElement("summary");
-            summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
+            summary.textContent = place.name[0].toUpperCase() + place.name.slice(1).replace(/_(\w)/g, function (match, letter) {
               return " " + letter.toUpperCase();
             });
 
             details.appendChild(summary);
             const ul = document.createElement("ul");
-            for (let item of webb_locations[key]) {
-              const li = document.createElement("li"); // create a list item for each item
-              li.textContent = item.name;
+            for (let item of place.location) {
+              const li = document.createElement("li");
+              li.textContent = item[0];
               li.addEventListener("click", function () {
                 showDetailPage(item);
               });
               ul.appendChild(li);
             }
-            details.appendChild(ul); // append the list to the details
-            outer.appendChild(details); // append the details to the outer div
+            details.appendChild(ul);
+            outer.appendChild(details);
           }
           currentPage = "home";
           currentLocation = null;
           document.getElementById("home-button").style.display = "none";
         }
+
 
         function showDetailPage(location) {
           const outer = document.getElementById("outer");
