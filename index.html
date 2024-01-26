@@ -1,418 +1,383 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <!-- https://james2moore.github.io/geo/ -->
-  <!-- https://github.com/nzjs/kalman-filter-js?tab=readme-ov-file -->
-  <!-- https://stackoverflow.com/questions/49696561/access-compass-data-in-mobile-web-html5 方向问题-->
-  <!--
-    ➣ U+27A3 &#10147;
-    ⮚ U+2B9A &#11162;
-    ➤ U+27A4 &#10148;
-    🠖 U+1F816 &#129046;
-    🡲 U+1F872 &#129138; 
-  -->
-  <!--
-    使用json文件保存数据，读取坐标并判断在哪个学校坐标，自动读取学校的数据文件并显示  
-  -->
-  <title>Geolocation Example</title>
+  <!--https://james2moore.github.io/geo/-->
+  <title>Signpost</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
+  <style type="text/css">
+    #placeList ul {
+      list-style-type: none;
+      padding-inline-start: 1rem;
     }
 
-    h1 {
-      background-color: #333;
-      color: white;
-      margin: 0;
-      padding: 10px;
+    #placeList li {
+      margin-top: .5rem;
+      margin-bottom: .5rem;
     }
 
-    h2 {
-      margin: 10px;
+    #placeList summary {
+      opacity: .5;
     }
 
-    p {
-      margin: 10px;
+    #placeList span {
+      margin-inline-start: .5rem;
+      opacity: .5;
     }
 
-    #outer {
-      margin: 10px;
-    }
-
-    ul {
-      list-style: none;
-      margin: 10;
-      padding: 0;
-    }
-
-    li {
-      border-bottom: 1px solid #ccc;
-      cursor: pointer;
-      padding: 10px;
-    }
-
-    li:hover {
-      background-color: #eee;
-    }
-
-    span {
+    #placeList b {
       display: inline-block;
-      vertical-align: middle;
-    }
-
-    #home-button {
-      display: none;
-      margin: 10px;
-    }
-
-    #home-button:hover {
-      background-color: #eee;
-    }
-
-    summary {
-      margin: 5px;
-      padding: 5px;
-      line-height: 1.5;
+      font-size: .8rem;
+      margin-inline-start: .5rem;
     }
   </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="module">
+    //所有地点的信息
+    const PLACES = [
+      {
+        "name": "The Webb Schools",
+        "boundary": [
+          [34.129938, -117.742799, 34.128788, -117.739827],
+          [34.128788, -117.742598, 34.127339, -117.736260],
+          [34.127339, -117.742472, 34.124354, -117.733227],
+          [34.124354, -117.740821, 34.121610, -117.735081]
+        ],
+        "location": [
+          ["Price Dining Hall", 34.1241543, -117.7398563],
+          {
+            "name": "alf_museum:",
+            "location": [
+              ["Alf Museum 2F Back Door", 34.1233579, -117.7390518],
+              ["Alf Museum Front Door", 34.1235657, -117.7389072],
+              ["Alf Museum 2F Bathroom", 34.1235885, -117.7390106],
+            ]
+          },
+          {
+            "name": "south_hutch",
+            "location": [
+              ["South Hutch Front Door", 34.1239831, -117.7384314],
+              ["South Hutch Room 414", 34.1239599, -117.7382364],
+              ["South Hutch Room 413", 34.1239646, -117.7382196],
+            ]
+          },
+          {
+            "name": "nelson",
+            "location": [
+              ["Nelson Room 103", 34.1239755, -117.77395852],
+              ["Liu Cheung Theater", 34.1240131, -117.7395663],
+              ["", ,],
+            ]
+          },
+          {
+            "name": "Library",
+            "location": [
+              ["Library Door", 34.1238431, -117.7390556],
+              ["Library Room North, 3, South", 34.1239534, -117.7388547],
+              ["Library Room 2", 34.1240165, -117.7387937],
+            ]
+          }
+        ]
+      },
+      {
+        "name": "La Verne Towne Center",
+        "boundary": [
+          [34.113511, -117.763343, 34.107986, -117.757244]
+        ],
+        "location": [
+          ["Parking lot entrance and exit", 34.111508, -117.760086],
+          ['West parking lot', 34.111069, -117.761092],
+          ["East parking lot", 34.110423, -117.759410],
+          ["Bus station, Stop ID:1347", 34.111779, -117.761104],
+          ["Target Grocery", 34.110009, -117.759385],
+          ["Staples(Office supply store)", 34.110757, -117.761217],
+          ["McDonald's", 34.112866, -117.762204]
+        ]
+      },
+      {
+        "name": "Boracay Island",
+        "boundary": [
+          [11.998052, 121.902291, 11.940964, 121.952756]
+        ],
+        "location": [
+          ["S1 Beach", 11.968732, 121.918694],
+          ["S2 Beach", 11.960763, 121.924721],
+          ["S3 Beach", 11.953299, 121.929169],
+          ["Bulabog Beach", 11.965783, 121.928838],
+          {
+            "name": "Restaurant",
+            "location": [
+              ["McDonald's", 11.962948, 121.926563],
+              ["The Pig Out Bistro", 11.965298, 121.923524]
+            ]
+          },
+          {
+            "name": "Supermarket",
+            "location": [
+              ["Budget Mart", 11.963232267224607, 121.92638565938344],
+              ["Robinsons Supermarket", 11.975197752900698, 121.9184145513564],
+              ["CityMall Boracay", 11.979172241037892, 121.92073167663847],
+            ]
+          }
+        ]
+      },
+    ]//PLACES
+    class GPSKalmanFilter {
+      // Decay in m/s - 3 is a good number for walking pace, 
+      // ideally change decay to 11 m/s for travel at 40kmh
+      // or change to 25 m/s for travel at 100kmh
+      constructor(decay = 1) {
+        this.decay = decay
+        this.variance = -1
+        this.minAccuracy = 1
+      }
+
+      // Kalman filter processing for latitude and longitude
+      //
+      // lat = new measurement of latitude
+      // lon = new measurement of longitude
+      // accuracy = measurement of 1 standard deviation error in metres
+      // timestampInMs = time of measurement from geolocation service
+      // 
+      // This returns a new filtered X Y geolocation
+      //
+      filter(lat, lon, accuracy, timestampInMs) {
+        if (accuracy < this.minAccuracy) accuracy = this.minAccuracy
+        //console.log('accuracy is', accuracy)
+
+        // if variance < 0, object is unitialised, so initialise with current values
+        if (this.variance < 0) {
+          //console.log('initialised values')
+          this.timestampInMs = timestampInMs
+          this.lat = lat
+          this.lon = lon
+          this.variance = accuracy * accuracy
+        }
+
+        // else apply Kalman filter methodology
+        else {
+          //console.log('applying kalman filtering now')
+          const timeIncMs = timestampInMs - this.timestampInMs
+
+          // time has moved on, so the uncertainty in the current position increases
+          if (timeIncMs > 0) {
+            this.variance += (timeIncMs * this.decay * this.decay) / 1000
+            this.timestampInMs = timestampInMs
+          }
+          // TODO: USE VELOCITY INFORMATION HERE TO GET A BETTER ESTIMATE OF CURRENT POSITION ?
+          // Kalman gain matrix K = Covarariance * Inverse(Covariance + MeasurementVariance)
+          // NB: because K is dimensionless, it doesn't matter that variance has different units to lat and lon
+          const _k = this.variance / (this.variance + (accuracy * accuracy))
+          this.lat += _k * (lat - this.lat)
+          this.lon += _k * (lon - this.lon)
+          // new Covarariance  matrix is (IdentityMatrix - K) * Covarariance 
+          this.variance = (1 - _k) * this.variance
+        }
+        return [this.lat, this.lon]
+      }
+    }//class
+
+    const asin = Math.asin
+    const cos = Math.cos
+    const sin = Math.sin
+    const sqrt = Math.sqrt
+    const PI = Math.PI
+
+    // equatorial mean radius of Earth (in meters)
+    const R = 6378137
+
+    function squared(x) { return x * x }
+    function toRad(x) { return x * PI / 180.0 }
+    function hav(x) {
+      return squared(sin(x / 2))
+    }
+
+    // hav(theta) = hav(bLat - aLat) + cos(aLat) * cos(bLat) * hav(bLon - aLon)
+    function haversineDistance(a, b) {
+      const aLat = toRad(Array.isArray(a) ? a[1] : a.latitude ?? a.lat)
+      const bLat = toRad(Array.isArray(b) ? b[1] : b.latitude ?? b.lat)
+      const aLng = toRad(Array.isArray(a) ? a[0] : a.longitude ?? a.lng ?? a.lon)
+      const bLng = toRad(Array.isArray(b) ? b[0] : b.longitude ?? b.lng ?? b.lon)
+      const ht = hav(bLat - aLat) + cos(aLat) * cos(bLat) * hav(bLng - aLng)
+      return 2 * R * asin(sqrt(ht))
+    }
+
+    // Converts from degrees to radians
+    function toRadians(degrees) {
+      return degrees * Math.PI / 180;
+    };
+
+    // Converts from radians to degrees
+    function toDegrees(radians) {
+      return radians * 180 / Math.PI;
+    }
+
+    function bearing(startLat, startLng, destLat, destLng) {
+      startLat = toRadians(startLat);
+      startLng = toRadians(startLng);
+      destLat = toRadians(destLat);
+      destLng = toRadians(destLng);
+      let y = Math.sin(destLng - startLng) * Math.cos(destLat);
+      let x = Math.cos(startLat) * Math.sin(destLat) - Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+      let brng = Math.atan2(y, x);
+      brng = toDegrees(brng);
+      return (brng + 360) % 360;
+    }
+
+    if (navigator.geolocation) {
+      // Call watchPosition once to start tracking the user location
+      let lastCheckPlaceTime = 0//最后检查地点的时间
+      let lastPlace//最后显示的地点
+      let lastUpdateLocationTime = 0//最后刷新距离的时间
+      let lastMapDiv
+      const kalman = new GPSKalmanFilter()
+
+      function itemClick() {
+
+      }
+      function viewCoord(parent, locations) {
+        const ulEle = document.createElement('ul')
+        for (const location of locations) {
+          const liEle = document.createElement('li')
+          if (Array.isArray(location)) {
+            //如果是数组，则是直接地点
+            liEle.lat = location[1]
+            liEle.lon = location[2]
+            const labelEle = document.createElement('label')
+            labelEle.textContent = location[0]
+            liEle.appendChild(labelEle)
+            const spanEle = document.createElement('span')
+            liEle.appendChild(spanEle)
+            const bEle = document.createElement('b')
+            bEle.innerHTML = '&#10148;'
+            liEle.appendChild(bEle)
+            liEle.addEventListener('click', () => {
+              if (lastMapDiv) {
+                lastMapDiv.remove()
+              }
+              lastMapDiv = document.createElement('div')
+              lastMapDiv.style.height = '10rem'
+              liEle.appendChild(lastMapDiv)
+              const map = L.map(lastMapDiv)
+              map.fitBounds([[lastLat, lastLng], [liEle.lat, liEle.lon]])
+              const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map)
+              L.marker([lastLat, lastLng]).addTo(map)
+              L.marker([liEle.lat, liEle.lon]).addTo(map).bindPopup(labelEle.textContent).openPopup()
+            })
+          } else {
+            //如果是对象，则是地点分类
+            const detailsEle = document.createElement('details')
+            if (location.name) {
+              const summaryEle = document.createElement('summary')
+              summaryEle.textContent = location.name
+              detailsEle.appendChild(summaryEle)
+            }
+            liEle.appendChild(detailsEle)
+            if (location.location) {
+              viewCoord(detailsEle, location.location)
+            }
+          }
+          ulEle.appendChild(liEle)
+        }
+        parent.appendChild(ulEle)
+      }
+
+      //刷新地点信息
+      function updatePlace() {
+        //console.log('updatePlace', lastPlace)
+        //移除所有子元素
+        while (placeList.lastChild) {
+          placeList.removeChild(placeList.lastChild)
+        }
+        if (lastPlace) {
+          viewCoord(placeList, lastPlace.location)
+        }
+      }
+
+      //debug place
+      //lastPlace = PLACES[0]
+      //updatePlace()
+
+      //刷新距离
+      function updateLocation() {
+        const lis = placeList.querySelectorAll('#placeList li')
+        for (const liEle of lis) {
+          //如有坐标则更新距离,没有坐标是details,不用处理
+          if (liEle.lat && liEle.lon) {
+            const distance = haversineDistance([lastLat, lastLng], [liEle.lat, liEle.lon])
+            liEle.children[1].textContent = distance.toFixed(0) + 'm'
+            const bearingVal = bearing(lastLat, lastLng, liEle.lat, liEle.lon)
+            //liEle.children[2].style = `display:inline-block;font-size:.8rem;margin-inline-start:.5rem;transform:rotate(${bearingVal - lastAlpha - 90}deg)`
+            liEle.children[2].style = `transform:rotate(${bearingVal - lastAlpha - 90}deg)`
+          }
+        }
+      }
+
+      let lastAlpha = 0//最后记录的手机方向
+      addEventListener('compassneedscalibration', event => {
+        alert('Your compass needs calibration, please move with your device in a figure 8')
+        event.preventDefault()
+      }, true)
+
+      addEventListener('deviceorientationabsolute', event => {
+        lastAlpha = 360 - event.alpha
+      })
+
+      let lastLat, lastLng//最后得到的坐标
+      navigator.geolocation.watchPosition(position => {
+        // Get the raw GPS data
+        const timems = position.timestamp
+        // Apply the Kalman filter to the GPS data
+        const kalmanXY = kalman.filter(position.coords.latitude, position.coords.longitude, position.coords.accuracy, timems);
+        // Get the smoothed coordinates from the filter output
+        lastLat = kalmanXY[0]
+        lastLng = kalmanXY[1]
+        //console.log('watchPosition', lat, lng, acc, timems)
+        if (timems - lastCheckPlaceTime > 3000) {//如果上一次检查已经过去3秒，则再次检查；即每3秒检查一次
+          let findPlace//找到的地点
+          for (const place of PLACES) {//遍历所有地点
+            for (const boundary of place.boundary) {//遍历地点的所有矩形框
+              //如果在地点的边界内
+              if (lastLat < boundary[0] && lastLat > boundary[2] && lastLng > boundary[1] && lastLng < boundary[3]) {
+                //note:lat左上角比右下角数值大
+                //如果最后显示的地点不是此地点，则表示进入了某地点
+                findPlace = place
+                break
+              }
+            }//for boundary
+            if (findPlace) break//如果已找到地点，则强制结束
+          }//for place
+          lastCheckPlaceTime = timems//更新检查时间
+          //如果最后地点不等于找到的地点，则更新地点信息
+          if (lastPlace != findPlace) {
+            lastPlace = findPlace
+            updatePlace()
+          }
+        }
+        if (timems - lastUpdateLocationTime > 500) {//如果上一次检查已经过去300ms，则再次刷新
+          updateLocation()
+          lastUpdateLocationTime = timems
+        }
+      }, error => {
+        //errorText.textContent = `Error getting user location: ${error}`
+      }, {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      })
+    } else {
+      errorText.textContent = 'Geolocation is not supported by this browser.'
+    }
+  </script>
 </head>
 
 <body>
-  <h1>v2<h1>
-      <h2>Current Location</h2>
-      <p id="coordswatch">Waiting for location...</p>
-      <p id="orientationWatch">orientation: </p>
-      <div id="outer"></div>
-
-      <button id="home-button">Home</button>
-      <script type="module">
-        // Function to check if the user is inside the specified area
-        function isInsideArea(lat, lon, area) {
-          for (const boundary of area.boundary) {
-            if (lat < boundary[0] && lat > boundary[2] && lon > boundary[1] && lon < boundary[3]) {
-              return true;
-            }
-          }
-          return false;
-        }
-
-        // Function to update location information based on user's position
-        function updateLocationInfo(lat, lon) {
-          const outer = document.getElementById("outer");
-          const homeButton = document.getElementById("home-button");
-
-          for (let key in webb_locations) {
-            const locations = webb_locations[key];
-            for (let location of locations) {
-              const lat2 = location.lat;
-              const lon2 = location.lon;
-
-              // Check if the user is inside the specified area
-              if (isInsideArea(lat, lon, location)) {
-                const distance = haversineDistance([lat, lon], [lat2, lon2]);
-                const distanceInMeters = distance * 1;
-
-                const bearingVal = bearing(lat, lon, lat2, lon2);
-
-                // Display the distance and bearing information
-                const distanceWatch = document.getElementById(`distancewatch-${location.name}`);
-                distanceWatch.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
-
-                // Update the current location
-                currentLocation = location;
-
-                // Show the home button
-                homeButton.style.display = "block";
-              } else {
-                // If the user is outside the area, hide the distance information
-                const distanceWatch = document.getElementById(`distancewatch-${location.name}`);
-                distanceWatch.innerHTML = '';
-              }
-            }
-          }
-        }
-        let currentPage = "home"; // the current page
-        let currentLocation = null; // the current location object, or null if none
-
-        window.addEventListener("compassneedscalibration", function (event) {
-          alert('Your compass needs calibration, please move with your device in a figure 8');
-          event.preventDefault();
-        }, true)
-
-        let lastAlpha = 0;
-
-        function WatchOrientation(event) {
-          lastAlpha = 360 - event.alpha;
-          orientationWatch.textContent = `Orientation: ${Math.round(360 - lastAlpha)}, ${event.absolute}, ${event.webkitCompassHeading}`
-        }
-        window.addEventListener('deviceorientationabsolute', WatchOrientation)
-
-        // Converts from degrees to radians
-        function toRadians(degrees) {
-          return degrees * Math.PI / 180;
-        };
-
-        // Converts from radians to degrees
-        function toDegrees(radians) {
-          return radians * 180 / Math.PI;
-        }
-
-        function bearing(startLat, startLng, destLat, destLng) {
-          startLat = toRadians(startLat);
-          startLng = toRadians(startLng);
-          destLat = toRadians(destLat);
-          destLng = toRadians(destLng);
-          let y = Math.sin(destLng - startLng) * Math.cos(destLat);
-          let x = Math.cos(startLat) * Math.sin(destLat) - Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
-          let brng = Math.atan2(y, x);
-          brng = toDegrees(brng);
-          return (brng + 360) % 360;
-        }
-
-        const asin = Math.asin
-        const cos = Math.cos
-        const sin = Math.sin
-        const sqrt = Math.sqrt
-        const PI = Math.PI
-
-        // equatorial mean radius of Earth (in meters)
-        const R = 6378137
-
-        function squared(x) { return x * x }
-        function toRad(x) { return x * PI / 180.0 }
-        function hav(x) {
-          return squared(sin(x / 2))
-        }
-
-        // hav(theta) = hav(bLat - aLat) + cos(aLat) * cos(bLat) * hav(bLon - aLon)
-        function haversineDistance(a, b) {
-          const aLat = toRad(Array.isArray(a) ? a[1] : a.latitude ?? a.lat)
-          const bLat = toRad(Array.isArray(b) ? b[1] : b.latitude ?? b.lat)
-          const aLng = toRad(Array.isArray(a) ? a[0] : a.longitude ?? a.lng ?? a.lon)
-          const bLng = toRad(Array.isArray(b) ? b[0] : b.longitude ?? b.lng ?? b.lon)
-          const ht = hav(bLat - aLat) + cos(aLat) * cos(bLat) * hav(bLng - aLng)
-          return 2 * R * asin(sqrt(ht))
-        }
-
-        class GPSKalmanFilter {
-          // Decay in m/s - 3 is a good number for walking pace, 
-          // ideally change decay to 11 m/s for travel at 40kmh
-          // or change to 25 m/s for travel at 100kmh
-          constructor(decay = 1) {
-            this.decay = decay
-            this.variance = -1
-            this.minAccuracy = 1
-          }
-
-          // Kalman filter processing for latitude and longitude
-          //
-          // lat = new measurement of latitude
-          // lon = new measurement of longitude
-          // accuracy = measurement of 1 standard deviation error in metres
-          // timestampInMs = time of measurement from geolocation service
-          // 
-          // This returns a new filtered X Y geolocation
-          //
-          filter(lat, lon, accuracy, timestampInMs) {
-            if (accuracy < this.minAccuracy) accuracy = this.minAccuracy
-            //console.log('accuracy is', accuracy)
-
-            // if variance < 0, object is unitialised, so initialise with current values
-            if (this.variance < 0) {
-              //console.log('initialised values')
-              this.timestampInMs = timestampInMs
-              this.lat = lat
-              this.lon = lon
-              this.variance = accuracy * accuracy
-            }
-
-            // else apply Kalman filter methodology
-            else {
-              //console.log('applying kalman filtering now')
-              const timeIncMs = timestampInMs - this.timestampInMs
-
-              // time has moved on, so the uncertainty in the current position increases
-              if (timeIncMs > 0) {
-                this.variance += (timeIncMs * this.decay * this.decay) / 1000
-                this.timestampInMs = timestampInMs
-              }
-              // TODO: USE VELOCITY INFORMATION HERE TO GET A BETTER ESTIMATE OF CURRENT POSITION ?
-              // Kalman gain matrix K = Covarariance * Inverse(Covariance + MeasurementVariance)
-              // NB: because K is dimensionless, it doesn't matter that variance has different units to lat and lon
-              const _k = this.variance / (this.variance + (accuracy * accuracy))
-              this.lat += _k * (lat - this.lat)
-              this.lon += _k * (lon - this.lon)
-              // new Covarariance  matrix is (IdentityMatrix - K) * Covarariance 
-              this.variance = (1 - _k) * this.variance
-            }
-            return [this.lat, this.lon]
-          }
-        }//class 
-
-        function WatchLocation() {
-          if (navigator.geolocation) {
-            // Call watchPosition once to start tracking the user location
-            const watchID = navigator.geolocation.watchPosition(
-              function (position) {
-                // Get the raw GPS data
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                const acc = position.coords.accuracy;
-                const timems = position.timestamp;
-
-                // Apply the Kalman filter to the GPS data
-                let kalmanXY = kalman.filter(lat, lng, acc, timems);
-
-                // Get the smoothed coordinates from the filter output
-                const smoothLat = kalmanXY[0];
-                const smoothLng = kalmanXY[1];
-
-                //console.log(`Smoothed latitude: ${smoothLat}, smoothed longitude: ${smoothLng}, accuracy: ${acc}, timeS: ${Math.floor(timems / 1000)}`);
-                showwatchPosition(smoothLat, smoothLng, acc); // Call showPosition to update the coordinates on the screen using the smoothed values
-              },
-              function (error) {
-                console.error("Error getting user location:", error);
-              },
-              {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
-              }
-            );
-          } else {
-            const x = document.getElementById("coordswatch");
-            x.innerHTML = "Geolocation is not supported by this browser.";
-          }
-        }
-
-        // Create an array of objects to store the locations and their names
-        //format: {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
-
-        const webb_locations = {
-          alf_museum: [
-            { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
-            { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
-            { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
-          ],
-
-          south_hutch: [
-            { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
-            { name: "South Hutch Room 414", lat: 34.1239599, lon: -117.7382364 },
-            { name: "South Hutch Room 413", lat: 34.1239646, lon: -117.7382196 },
-          ],
-
-          nelson: [
-            { name: "Nelson Room 103", lat: 34.1239755, lon: -117.77395852 },
-            { name: "Liu Cheung Theater", lat: 34.1240131, lon: -117.7395663 },
-          ],
-
-          library: [
-            { name: "Library Door", lat: 34.1238431, lon: -117.7390556 },
-            { name: "Library Room North, 3, South", lat: 34.1239534, lon: -117.7388547 },
-            { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
-          ],
-
-          other: [
-            { name: "Price Dining Hall", lat: 34.1241543, lon: -117.7398563 },
-          ],
-        };
-
-        function showwatchPosition(smoothLat, smoothLng, acc) {
-          const x = document.getElementById("coordswatch");
-          x.innerHTML = `lat: ${smoothLat.toFixed(5)}, lon: ${smoothLng.toFixed(5)}, acc: ${acc.toFixed(2)}`;
-          // Loop over the locations array and calculate the distance to each one
-          if (currentPage === "home") {
-            // If the current page is home, show all the locations
-            for (let property in webb_locations) {
-              let locations = webb_locations[property];
-              for (let location of locations) {
-                const lat2 = location.lat;
-                const lon2 = location.lon;
-
-                // Loop over the locations array and calculate the distance to each one
-                const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2])
-
-                // Convert the distance from km to m
-                //const distanceInMeters = distance * 1000;
-                const distanceInMeters = distance * 1;
-
-                const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
-                // Display the distance in a new element with the location name
-                const y = null;
-                y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
-              }
-            }
-          } else if (currentPage === "detail" && currentLocation) {
-            // If the current page is detail and there is a current location, show only that location
-            const lat2 = currentLocation.lat;
-            const lon2 = currentLocation.lon;
-
-            const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
-            const distanceInMeters = distance * 1;
-
-            const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
-
-            const y = document.getElementById(`distancewatch-${currentLocation.name}`);
-            y.innerHTML = `<h2>${currentLocation.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
-          }
-        }
-
-        const kalman = new GPSKalmanFilter();
-        window.addEventListener("load", WatchLocation);
-
-        function createHomePage() {
-          const outer = document.getElementById("outer");
-          outer.innerHTML = "";
-          for (let key in webb_locations) {
-            const details = document.createElement("details");
-            const summary = document.createElement("summary");
-            summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
-              return " " + letter.toUpperCase();
-            });
-
-            details.appendChild(summary);
-            const ul = document.createElement("ul");
-            for (let item of webb_locations[key]) {
-              const li = document.createElement("li"); // create a list item for each item
-              li.textContent = item.name;
-              li.addEventListener("click", function () {
-                showDetailPage(item);
-              });
-              ul.appendChild(li);
-            }
-            details.appendChild(ul); // append the list to the details
-            outer.appendChild(details); // append the details to the outer div
-          }
-          currentPage = "home";
-          currentLocation = null;
-          document.getElementById("home-button").style.display = "none";
-        }
-
-        function showDetailPage(location) {
-          const outer = document.getElementById("outer");
-          outer.innerHTML = "";
-          const distancewatch = document.createElement("div"); // create a div for the location
-          distancewatch.id = `distancewatch-${location.name}`; // set the id to the location name
-          outer.appendChild(distancewatch); // append the div to the outer div
-          currentPage = "detail"; // update the current page
-          currentLocation = location; // update the current location
-          document.getElementById("home-button").style.display = "block"; // show the home button
-        }
-
-        // Click event listener to the home button
-        document.getElementById("home-button").addEventListener("click", function () {
-          createHomePage(); // create the home page when the button is clicked
-        });
-
-        // Call to create the home page when the webpage loads
-        createHomePage();
-
-      </script>
-
+  <div id="placeList"></div>
+  <h2 id="errorText"></h2>
 </body>
 
 </html>

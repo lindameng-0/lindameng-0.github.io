@@ -17,47 +17,149 @@
   -->
   <title>Geolocation Example</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
+    h1 {
+      background-color: #333;
+      color: white;
+      margin: 0;
+      padding: 10px;
+    }
+
+    h2 {
+      margin: 10px;
+    }
+
+    p {
+      margin: 10px;
+    }
+
+    #outer {
+      margin: 10px;
+    }
+
+    ul {
+      list-style: none;
+      margin: 10;
+      padding: 0;
+    }
+
+    li {
+      border-bottom: 1px solid #ccc;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    li:hover {
+      background-color: #eee;
+    }
+
+    span {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    #home-button {
+      display: none;
+      margin: 10px;
+    }
+
+    #home-button:hover {
+      background-color: #eee;
+    }
+
+    summary {
+      margin: 5px;
+      padding: 5px;
+      line-height: 1.5;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>v123<h1>
-
+  <h1>v2<h1>
       <h2>Current Location</h2>
-      <span>disc<span style="display:inline-block;transform:rotate(45deg);font-size: 3em;">&#10148;</span></span>
       <p id="coordswatch">Waiting for location...</p>
       <p id="orientationWatch">orientation: </p>
       <div id="outer"></div>
-      <!--
-    <script src="kalman_gps.js"></script>
-    -->
-      <!--
-    <script src="locationfind.js"></script>
-     -->
 
+      <button id="home-button">Home</button>
       <script type="module">
+        // Function to check if the user is inside the specified area
+        function isInsideArea(lat, lon, area) {
+          for (const boundary of area.boundary) {
+            if (lat < boundary[0] && lat > boundary[2] && lon > boundary[1] && lon < boundary[3]) {
+              return true;
+            }
+          }
+          return false;
+        }
+
+        // Function to update location information based on user's position
+        function updateLocationInfo(lat, lon) {
+          const outer = document.getElementById("outer");
+          const homeButton = document.getElementById("home-button");
+
+          for (let key in webb_locations) {
+            const locations = webb_locations[key];
+            for (let location of locations) {
+              const lat2 = location.lat;
+              const lon2 = location.lon;
+
+              // Check if the user is inside the specified area
+              if (isInsideArea(lat, lon, location)) {
+                const distance = haversineDistance([lat, lon], [lat2, lon2]);
+                const distanceInMeters = distance * 1;
+
+                const bearingVal = bearing(lat, lon, lat2, lon2);
+
+                // Display the distance and bearing information
+                const distanceWatch = document.getElementById(`distancewatch-${location.name}`);
+                distanceWatch.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+
+                // Update the current location
+                currentLocation = location;
+
+                // Show the home button
+                homeButton.style.display = "block";
+              } else {
+                // If the user is outside the area, hide the distance information
+                const distanceWatch = document.getElementById(`distancewatch-${location.name}`);
+                distanceWatch.innerHTML = '';
+              }
+            }
+          }
+        }
+        let currentPage = "home"; // the current page
+        let currentLocation = null; // the current location object, or null if none
+
         window.addEventListener("compassneedscalibration", function (event) {
-          alert('Your compass needs calibration, please move with your device towards the number 8');
+          alert('Your compass needs calibration, please move with your device in a figure 8');
           event.preventDefault();
         }, true)
 
         let lastAlpha = 0;
+
         function WatchOrientation(event) {
           lastAlpha = 360 - event.alpha;
           orientationWatch.textContent = `Orientation: ${Math.round(360 - lastAlpha)}, ${event.absolute}, ${event.webkitCompassHeading}`
         }
         window.addEventListener('deviceorientationabsolute', WatchOrientation)
 
-        // Converts from degrees to radians.
+        // Converts from degrees to radians
         function toRadians(degrees) {
           return degrees * Math.PI / 180;
         };
 
-        // Converts from radians to degrees.
+        // Converts from radians to degrees
         function toDegrees(radians) {
           return radians * 180 / Math.PI;
         }
-
 
         function bearing(startLat, startLng, destLat, destLng) {
           startLat = toRadians(startLat);
@@ -150,6 +252,7 @@
             return [this.lat, this.lon]
           }
         }//class 
+
         function WatchLocation() {
           if (navigator.geolocation) {
             // Call watchPosition once to start tracking the user location
@@ -188,60 +291,126 @@
 
         // Create an array of objects to store the locations and their names
         //format: {name: "Robotics Walkway", lat: 34.123754, lon: -117.7378068},
-        const locations = [
-          { name: "Hiagens", lat: 11.965600, lon: 121.928390 },
-          { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
-          { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
-          { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
-          { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
-          { name: "South Hutch Room 414", lat: 34.1239599, lon: -117.7382364 },
-          { name: "South Hutch Room 413", lat: 34.1239646, lon: -117.7382196 },
-          { name: "Price Dining Hall", lat: 34.1241543, lon: -117.7398563 },
-          { name: "Nelson Room 103", lat: 34.1239755, lon: -117.77395852 },
-          { name: "Liu Cheung Theater", lat: 34.1240131, lon: -117.7395663 },
-          { name: "Library Door", lat: 34.1238431, lon: -117.7390556 },
-          { name: "Library Room North, 3, South", lat: 34.1239534, lon: -117.7388547 },
-          { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
-        ];
+
+        const webb_locations = {
+          alf_museum: [
+            { name: "Alf Museum 2F Back Door", lat: 34.1233579, lon: -117.7390518 },
+            { name: "Alf Museum Front Door", lat: 34.1235657, lon: -117.7389072 },
+            { name: "Alf Museum 2F Bathroom", lat: 34.1235885, lon: -117.7390106 },
+          ],
+
+          south_hutch: [
+            { name: "South Hutch Front Door", lat: 34.1239831, lon: -117.7384314 },
+            { name: "South Hutch Room 414", lat: 34.1239599, lon: -117.7382364 },
+            { name: "South Hutch Room 413", lat: 34.1239646, lon: -117.7382196 },
+          ],
+
+          nelson: [
+            { name: "Nelson Room 103", lat: 34.1239755, lon: -117.77395852 },
+            { name: "Liu Cheung Theater", lat: 34.1240131, lon: -117.7395663 },
+          ],
+
+          library: [
+            { name: "Library Door", lat: 34.1238431, lon: -117.7390556 },
+            { name: "Library Room North, 3, South", lat: 34.1239534, lon: -117.7388547 },
+            { name: "Library Room 2", lat: 34.1240165, lon: -117.7387937 },
+          ],
+
+          other: [
+            { name: "Price Dining Hall", lat: 34.1241543, lon: -117.7398563 },
+          ],
+        };
 
         function showwatchPosition(smoothLat, smoothLng, acc) {
           const x = document.getElementById("coordswatch");
           x.innerHTML = `lat: ${smoothLat.toFixed(5)}, lon: ${smoothLng.toFixed(5)}, acc: ${acc.toFixed(2)}`;
           // Loop over the locations array and calculate the distance to each one
-          for (let location of locations) {
-            // Get the fixed point coordinates
-            const lat2 = location.lat;
-            const lon2 = location.lon;
+          if (currentPage === "home") {
+            // If the current page is home, show all the locations
+            for (let property in webb_locations) {
+              let locations = webb_locations[property];
+              for (let location of locations) {
+                const lat2 = location.lat;
+                const lon2 = location.lon;
 
-            // Loop over the locations array and calculate the distance to each one
+                // Loop over the locations array and calculate the distance to each one
+                const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2])
+
+                // Convert the distance from km to m
+                //const distanceInMeters = distance * 1000;
+                const distanceInMeters = distance * 1;
+
+                const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
+                // Display the distance in a new element with the location name
+                const y = null;
+                y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
+              }
+            }
+          } else if (currentPage === "detail" && currentLocation) {
+            // If the current page is detail and there is a current location, show only that location
+            const lat2 = currentLocation.lat;
+            const lon2 = currentLocation.lon;
+
             const distance = haversineDistance([smoothLat, smoothLng], [lat2, lon2]);
-
-            // Convert the distance from km to m
-            //const distanceInMeters = distance * 1000;
             const distanceInMeters = distance * 1;
 
             const bearingVal = bearing(smoothLat, smoothLng, lat2, lon2)
-            // Display the distance in a new element with the location name
-            const y = document.getElementById(`distancewatch-${location.name}`);
-            y.innerHTML = `<h2>${location.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">&#10148;</span></span>`; // Round the distance to 2 decimal places and use tags
+
+            const y = document.getElementById(`distancewatch-${currentLocation.name}`);
+            y.innerHTML = `<h2>${currentLocation.name}</h2><span>Distance: ${distanceInMeters.toFixed(2)} m, Bearing: ${bearingVal.toFixed(0)}<span style="display:inline-block;font-size:3em;transform:rotate(${bearingVal - lastAlpha - 90}deg)">➤</span></span>`;
           }
         }
 
         const kalman = new GPSKalmanFilter();
         window.addEventListener("load", WatchLocation);
 
-        // Loop over the locations array and create the HTML elements for each one
-        for (let location of locations) {
-          // Create a new h1 element with the location name and coordinates
-          const h1 = document.createElement("h1");
-          h1.textContent = `Haversine Distance ${location.name} (${location.lat}, ${location.lon})`;
-
-          // Create a new div element for the distance and append it to the outer div
+        function createHomePage() {
           const outer = document.getElementById("outer");
-          const distancewatch = document.createElement("div");
-          distancewatch.id = `distancewatch-${location.name}`;
-          outer.appendChild(distancewatch);
+          outer.innerHTML = "";
+          for (let key in webb_locations) {
+            const details = document.createElement("details");
+            const summary = document.createElement("summary");
+            summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
+              return " " + letter.toUpperCase();
+            });
+
+            details.appendChild(summary);
+            const ul = document.createElement("ul");
+            for (let item of webb_locations[key]) {
+              const li = document.createElement("li"); // create a list item for each item
+              li.textContent = item.name;
+              li.addEventListener("click", function () {
+                showDetailPage(item);
+              });
+              ul.appendChild(li);
+            }
+            details.appendChild(ul); // append the list to the details
+            outer.appendChild(details); // append the details to the outer div
+          }
+          currentPage = "home";
+          currentLocation = null;
+          document.getElementById("home-button").style.display = "none";
         }
+
+        function showDetailPage(location) {
+          const outer = document.getElementById("outer");
+          outer.innerHTML = "";
+          const distancewatch = document.createElement("div"); // create a div for the location
+          distancewatch.id = `distancewatch-${location.name}`; // set the id to the location name
+          outer.appendChild(distancewatch); // append the div to the outer div
+          currentPage = "detail"; // update the current page
+          currentLocation = location; // update the current location
+          document.getElementById("home-button").style.display = "block"; // show the home button
+        }
+
+        // Click event listener to the home button
+        document.getElementById("home-button").addEventListener("click", function () {
+          createHomePage(); // create the home page when the button is clicked
+        });
+
+        // Call to create the home page when the webpage loads
+        createHomePage();
+
       </script>
 
 </body>
