@@ -237,11 +237,16 @@
       const kalman = new GPSKalmanFilter()
 
       function itemClick() {
-
       }
+
       function viewCoord(parent, locations) {
         const ulEle = document.createElement('ul')
         for (const location of locations) {
+            const details = document.createElement("details");
+            const summary = document.createElement("summary");
+            summary.textContent = key[0].toUpperCase() + key.slice(1).replace(/_(\w)/g, function (match, letter) {
+              return " " + letter.toUpperCase();
+            });
           const liEle = document.createElement('li')
           if (Array.isArray(location)) {
             //如果是数组，则是直接地点
