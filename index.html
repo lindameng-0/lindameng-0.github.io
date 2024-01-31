@@ -7,73 +7,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <style type="text/css">
-    /* Use a light gray background for the body */
-body {
-  background-color: #f0f0f0;
+    /* Define the main colors */
+:root {
+  --black: #000;
+  --blue: #00f;
+  --white: #fff;
 }
 
-/* Use a sans-serif font for the text */
+/* Apply a simple and modern font to the whole document */
 * {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, sans-serif;
 }
 
-/* Use a dark blue color for the headings */
-h1, h2, h3, h4, h5, h6 {
-  color: #003366;
+/* Style the list elements */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-/* Use a lighter blue color for the links */
-a {
-  color: #0099cc;
-}
-
-/* Use a border-radius and box-shadow to create a card effect for the list items */
 li {
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin: 10px;
-  padding: 10px;
-}
-
-/* Use a flex layout to align the label, span, and arrow horizontally */
-li > label, li > span, li > b {
   display: flex;
   align-items: center;
+  margin: 0.5rem;
+  border: 1px solid var(--black);
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
-/* Use a margin to create some space between the label and the span */
-li > label {
-  margin-right: 10px;
+/* Style the label elements */
+label {
+  flex: 1;
+  padding: 0.5rem;
+  background-color: var(--blue);
+  color: var(--white);
+  font-weight: bold;
 }
 
-/* Use a gray color and a smaller font size for the span */
-li > span {
-  color: gray;
-  font-size: 0.8em;
+/* Style the span elements */
+span {
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--white);
+  border-left: 1px solid var(--black);
 }
 
-/* Use a larger font size and a darker color for the arrow */
-li > b {
-  font-size: 1.2em;
-  color: #333333;
+/* Style the b elements */
+b {
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--black);
+  color: var(--white);
+  font-size: 1.5rem;
+  text-align: center;
+  line-height: 2rem;
 }
 
-/* Use a border and a padding to create a frame for the map */
-li > div {
-  border: 1px solid #cccccc;
-  padding: 5px;
+/* Style the details and summary elements */
+details {
+  margin-left: 1rem;
 }
 
-/* Use a summary element to create a collapsible section for the location categories */
 summary {
   cursor: pointer;
 }
 
-/* Use a darker background color and a white text color for the summary when expanded */
-details[open] > summary {
-  background-color: #003366;
-  color: white;
+/* Style the map div elements */
+div {
+  width: 100%;
+  height: 100%;
+}
+
+/* Add some animation to the li elements on hover */
+li:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s;
 }
 
   </style>
