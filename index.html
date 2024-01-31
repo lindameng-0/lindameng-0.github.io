@@ -7,81 +7,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <style type="text/css">
-    /* Define the main colors */
-:root {
-  --black: #000;
-  --blue: #00f;
-  --white: #fff;
-}
-
-/* Apply a simple and modern font to the whole document */
+    /* Use a simple and modern font */
 * {
   font-family: Arial, sans-serif;
 }
 
-/* Style the list elements */
+/* Use black, blue and white as the main colors */
+body {
+  background-color: white;
+  color: black;
+}
+
 ul {
   list-style: none;
-  padding: 0;
-  margin: 0;
 }
 
 li {
-  display: flex;
-  align-items: center;
-  margin: 0.5rem;
-  border: 1px solid var(--black);
-  border-radius: 0.5rem;
-  overflow: hidden;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 10px;
 }
 
-/* Style the label elements */
+/* Use a blue background for the labels */
 label {
-  flex: 1;
-  padding: 0.5rem;
-  background-color: var(--blue);
-  color: var(--white);
-  font-weight: bold;
+  display: inline-block;
+  background-color: blue;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
 }
 
-/* Style the span elements */
+/* Use a span element to show the coordinates */
 span {
-  width: 2rem;
-  height: 2rem;
-  background-color: var(--white);
-  border-left: 1px solid var(--black);
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 0.8em;
 }
 
-/* Style the b elements */
+/* Use a bold arrow to indicate the clickable items */
 b {
-  width: 2rem;
-  height: 2rem;
-  background-color: var(--black);
-  color: var(--white);
-  font-size: 1.5rem;
-  text-align: center;
-  line-height: 2rem;
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 1.2em;
+  color: blue;
 }
 
-/* Style the details and summary elements */
+/* Use a details element to show the categories */
 details {
-  margin-left: 1rem;
+  margin: 10px;
 }
 
+/* Use a summary element to show the category name */
 summary {
+  font-weight: bold;
   cursor: pointer;
 }
 
-/* Style the map div elements */
-div {
+/* Use a map element to show the map */
+map {
   width: 100%;
-  height: 100%;
-}
-
-/* Add some animation to the li elements on hover */
-li:hover {
-  transform: scale(1.1);
-  transition: transform 0.3s;
+  height: 10rem;
 }
 
   </style>
