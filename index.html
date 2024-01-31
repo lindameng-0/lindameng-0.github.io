@@ -268,7 +268,7 @@
             const spanEle = document.createElement('span')
             liEle.appendChild(spanEle)
             const bEle = document.createElement('b')
-            bEle.innerHTML = '&#10148;'
+            bEle.innerHTML = '➤'
             liEle.appendChild(bEle)
             liEle.addEventListener('click', () => {
               if (lastMapDiv) {
@@ -279,7 +279,7 @@
               liEle.appendChild(lastMapDiv)
               const map = L.map(lastMapDiv)
               map.fitBounds([[lastLat, lastLng], [liEle.lat, liEle.lon]])
-              const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map)
+              const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '©<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map)
               L.marker([lastLat, lastLng]).addTo(map)
               L.marker([liEle.lat, liEle.lon]).addTo(map).bindPopup(labelEle.textContent).openPopup()
             })
@@ -292,7 +292,13 @@
               summaryEle.textContent = formatName(location.name)
               detailsEle.appendChild(summaryEle)
             }
-
+            // Add a title for the boundary
+            if (location.boundary) {
+              const titleEle = document.createElement('h3')
+              // Use the name of the location as the title
+              titleEle.textContent = formatName(location.name)
+              detailsEle.appendChild(titleEle)
+            }
             liEle.appendChild(detailsEle)
             if (location.location) {
               viewCoord(detailsEle, location.location)
