@@ -7,30 +7,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <style type="text/css">
-    #placeList ul {
-      list-style-type: none;
-      padding-inline-start: 1rem;
-    }
+    /* Use a custom font for the website */
+@import url('https://fonts.googleapis.com/css?family=Roboto');
 
-    #placeList li {
-      margin-top: .5rem;
-      margin-bottom: .5rem;
-    }
+* {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+}
 
-    #placeList summary {
-      opacity: .5;
-    }
+body {
+  margin: 20px;
+  padding: 20px;
+}
 
-    #placeList span {
-      margin-inline-start: .5rem;
-      opacity: .5;
-    }
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
-    #placeList b {
-      display: inline-block;
-      font-size: .8rem;
-      margin-inline-start: .5rem;
-    }
+li {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+label {
+  flex: 1;
+  font-weight: bold;
+  color: #333;
+}
+
+span {
+  flex: 1;
+  text-align: right;
+  color: #666;
+}
+
+b {
+  margin-left: 10px;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+}
+
+details {
+  margin-left: 20px;
+}
+
+summary {
+  font-weight: bold;
+  color: #333;
+}
+
+div {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+}
   </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -49,7 +83,7 @@
         ],
         "location": [
           {
-            "name": "alf_museum:",
+            "name": "alf_museum",
             "location": [
               ["Alf Museum 2F Back Door", 34.1233579, -117.7390518],
               ["Alf Museum Front Door", 34.1235657, -117.7389072],
@@ -72,7 +106,7 @@
             ]
           },
           {
-            "name": "Library",
+            "name": "library",
             "location": [
               ["Library Door", 34.1238431, -117.7390556],
               ["Library Room North, 3, South", 34.1239534, -117.7388547],
@@ -80,7 +114,7 @@
             ]
           },
           {
-            "name": "other:",
+            "name": "other",
             "location": [
               ["Price Dining Hall", 34.1241543, -117.7398563],
             ]
