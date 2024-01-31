@@ -7,79 +7,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <style type="text/css">
-    /* Define some colors and fonts */
-    :root {
-      --primary-color: #1e90ff;
-      --secondary-color: #f0f8ff;
-      --accent-color: #ff4500;
-      --font-family: Arial, sans-serif;
-    }
+    /* Use a light gray background for the body */
+body {
+  background-color: #f0f0f0;
+}
 
-    /* Apply a basic style to the body */
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: var(--font-family);
-      background-color: var(--secondary-color);
-    }
+/* Use a sans-serif font for the text */
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-    /* Style the list elements */
-    ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
+/* Use a dark blue color for the headings */
+h1, h2, h3, h4, h5, h6 {
+  color: #003366;
+}
 
-    li {
-      padding: 0.5rem;
-      border-bottom: 1px solid var(--primary-color);
-    }
+/* Use a lighter blue color for the links */
+a {
+  color: #0099cc;
+}
 
-    li:last-child {
-      border-bottom: none;
-    }
+/* Use a border-radius and box-shadow to create a card effect for the list items */
+li {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  padding: 10px;
+}
 
-    /* Style the label elements */
-    label {
-      display: inline-block;
-      width: 10rem;
-      font-weight: bold;
-      color: var(--primary-color);
-    }
+/* Use a flex layout to align the label, span, and arrow horizontally */
+li > label, li > span, li > b {
+  display: flex;
+  align-items: center;
+}
 
-    /* Style the span elements */
-    span {
-      display: inline-block;
-      width: 10rem;
-      text-align: right;
-      color: var(--accent-color);
-    }
+/* Use a margin to create some space between the label and the span */
+li > label {
+  margin-right: 10px;
+}
 
-    /* Style the b elements */
-    b {
-      display: inline-block;
-      width: 2rem;
-      text-align: center;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
+/* Use a gray color and a smaller font size for the span */
+li > span {
+  color: gray;
+  font-size: 0.8em;
+}
 
-    /* Style the details and summary elements */
-    details {
-      margin-left: 2rem;
-    }
+/* Use a larger font size and a darker color for the arrow */
+li > b {
+  font-size: 1.2em;
+  color: #333333;
+}
 
-    summary {
-      font-size: 1.2rem;
-      color: var(--primary-color);
-    }
+/* Use a border and a padding to create a frame for the map */
+li > div {
+  border: 1px solid #cccccc;
+  padding: 5px;
+}
 
-    /* Style the map div elements */
-    div {
-      border: 2px solid var(--primary-color);
-      border-radius: 0.5rem;
-      margin-top: 0.5rem;
-    }
+/* Use a summary element to create a collapsible section for the location categories */
+summary {
+  cursor: pointer;
+}
+
+/* Use a darker background color and a white text color for the summary when expanded */
+details[open] > summary {
+  background-color: #003366;
+  color: white;
+}
+
   </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
