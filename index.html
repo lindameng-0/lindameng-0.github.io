@@ -254,7 +254,25 @@
         return name;
       }
 
+      function createTitle(text) {
+        // Create a h1 element
+        const h1Ele = document.createElement('h1')
+        // Set the text content to the text argument
+        h1Ele.textContent = text
+        // Return the h1 element
+        return h1Ele
+      }
+
       function viewCoord(parent, locations) {
+        // Check if the parent element is a details element
+        if (parent.tagName === 'DETAILS') {
+          // Get the name of the boundary from the summary element
+          const boundaryName = parent.querySelector('summary').textContent
+          // Create a title element using the createTitle function
+          const titleEle = createTitle(boundaryName)
+          // Append the title element to the parent element
+          parent.appendChild(titleEle)
+        }
         const ulEle = document.createElement('ul')
         for (const location of locations) {
           const liEle = document.createElement('li')
