@@ -7,55 +7,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <style type="text/css">
-/* Use a simple and elegant font for the whole website */
-* {
+/* Use a white background and a black font for the body */
+body {
+  background-color: white;
+  color: black;
   font-family: Arial, sans-serif;
 }
 
-/* Use a light gray background for the body */
-body {
-  background-color: #f0f0f0;
-}
-
-/* Use a dark blue color for the headings */
-h1, h2, h3, h4, h5, h6 {
-  color: #003366;
-}
-
-/* Use a white background and a thin border for the list elements */
-li {
+/* Use a blue border and a white background for the ul and li elements */
+ul, li {
+  border: 1px solid blue;
   background-color: white;
-  border: 1px solid #cccccc;
-  margin: 5px;
-  padding: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-/* Use a lighter blue color for the labels */
+/* Use a blue font and a white background for the label elements */
 label {
-  color: #0099cc;
+  color: blue;
+  background-color: white;
+  display: inline-block;
+  padding: 5px;
 }
 
-/* Use a bold arrow symbol for the list items that have a map */
-li b {
+/* Use a blue arrow and a white background for the b elements */
+b {
+  color: blue;
+  background-color: white;
+  font-weight: normal;
+  font-size: 20px;
+}
+
+/* Use a blue font and a white background for the summary elements */
+summary {
+  color: blue;
+  background-color: white;
   font-weight: bold;
-  color: #003366;
+  cursor: pointer;
 }
 
-/* Use a darker gray color for the span elements */
-span {
-  color: #666666;
+/* Use a white font and a blue background for the popup elements */
+.leaflet-popup-content-wrapper {
+  color: white;
+  background-color: blue;
 }
 
-/* Use a rounded border and a box shadow for the map div */
-div {
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-/* Use a smaller font size and a lighter gray color for the attribution link */
-a {
-  font-size: 10px;
-  color: #999999;
+/* Use a blue border and a white background for the map elements */
+.leaflet-container {
+  border: 1px solid blue;
+  background-color: white;
 }
 
   </style>
