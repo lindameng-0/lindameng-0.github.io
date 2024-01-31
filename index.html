@@ -25,9 +25,9 @@ h1, h2, h3, h4, h5, h6 {
   color: #003366;
 }
 
-/* Use a light blue color for the links */
+/* Use a lighter blue color for the links */
 a {
-  color: #66ccff;
+  color: #0099cc;
 }
 
 /* Use a border-radius and box-shadow for the list items */
@@ -36,58 +36,54 @@ li {
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Use a margin and padding for the list items */
-li {
-  margin: 10px;
-  padding: 10px;
-}
-
-/* Use a flex layout for the list items */
-li {
-  display: flex;
-  align-items: center;
-}
-
-/* Use a white background for the list items */
-li {
+/* Use a white background and some padding for the list items */
+li label, li span, li b {
   background-color: #ffffff;
+  padding: 5px;
 }
 
-/* Use a smaller font size and a gray color for the span elements */
-span {
-  font-size: 0.8em;
-  color: #999999;
+/* Use a different background color for the details elements */
+details {
+  background-color: #e0e0e0;
 }
 
-/* Use a larger font size and a bold style for the label elements */
-label {
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
-/* Use a margin and a cursor pointer for the b elements */
-b {
-  margin-left: 10px;
+/* Use a cursor pointer for the list items that have a map */
+li[lat][lon] {
   cursor: pointer;
 }
 
-/* Use a fixed width and height for the map div elements */
-div {
-  width: 300px;
-  height: 200px;
+/* Use a fixed position and a z-index for the map div */
+div[style*="height: 10rem"] {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 999;
 }
 
-/* Use a border-radius and box-shadow for the map div elements */
-div {
-  border-radius: 10px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+/* Use a close button for the map div */
+div[style*="height: 10rem"]:before {
+  content: "X";
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #ff0000;
+  color: #ffffff;
+  padding: 5px;
+  cursor: pointer;
 }
 
-/* Use a margin for the map div elements */
-div {
-  margin: 10px;
+/* Use a click event to remove the map div */
+div[style*="height: 10rem"]:before:hover {
+  opacity: 0.8;
 }
 
+div[style*="height: 10rem"]:before:active {
+  opacity: 0.6;
+}
+
+div[style*="height: 10rem"]:before:click {
+  display: none;
+}
 
   </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
