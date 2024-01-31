@@ -255,58 +255,53 @@
       }
 
       function viewCoord(parent, locations) {
-  const ulEle = document.createElement('ul')
-  for (const location of locations) {
-    const liEle = document.createElement('li')
-    if (Array.isArray(location)) {
-      //如果是数组，则是直接地点
-      liEle.lat = location[1]
-      liEle.lon = location[2]
-      const labelEle = document.createElement('label')
-      labelEle.textContent = location[0]
-      liEle.appendChild(labelEle)
-      const spanEle = document.createElement('span')
-      liEle.appendChild(spanEle)
-      const bEle = document.createElement('b')
-      bEle.innerHTML = '➤'
-      liEle.appendChild(bEle)
-      liEle.addEventListener('click', () => {
-        if (lastMapDiv) {
-          lastMapDiv.remove()
+        const ulEle = document.createElement('ul')
+        for (const location of locations) {
+          const liEle = document.createElement('li')
+          if (Array.isArray(location)) {
+            //如果是数组，则是直接地点
+            liEle.lat = location[1]
+            liEle.lon = location[2]
+            const labelEle = document.createElement('label')
+            labelEle.textContent = location[0]
+            liEle.appendChild(labelEle)
+            const spanEle = document.createElement('span')
+            liEle.appendChild(spanEle)
+            const bEle = document.createElement('b')
+            bEle.innerHTML = '&#10148;'
+            liEle.appendChild(bEle)
+            liEle.addEventListener('click', () => {
+              if (lastMapDiv) {
+                lastMapDiv.remove()
+              }
+              lastMapDiv = document.createElement('div')
+              lastMapDiv.style.height = '10rem'
+              liEle.appendChild(lastMapDiv)
+              const map = L.map(lastMapDiv)
+              map.fitBounds([[lastLat, lastLng], [liEle.lat, liEle.lon]])
+              const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy;<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map)
+              L.marker([lastLat, lastLng]).addTo(map)
+              L.marker([liEle.lat, liEle.lon]).addTo(map).bindPopup(labelEle.textContent).openPopup()
+            })
+          } else {
+            //如果是对象，则是地点分类
+            const detailsEle = document.createElement('details')
+            if (location.name) {
+              const summaryEle = document.createElement('summary')
+              // Format the location name
+              summaryEle.textContent = formatName(location.name)
+              detailsEle.appendChild(summaryEle)
+            }
+
+            liEle.appendChild(detailsEle)
+            if (location.location) {
+              viewCoord(detailsEle, location.location)
+            }
+          }
+          ulEle.appendChild(liEle)
         }
-        lastMapDiv = document.createElement('div')
-        lastMapDiv.style.height = '10rem'
-        liEle.appendChild(lastMapDiv)
-        const map = L.map(lastMapDiv)
-        map.fitBounds([[lastLat, lastLng], [liEle.lat, liEle.lon]])
-        const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '©<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map)
-        L.marker([lastLat, lastLng]).addTo(map)
-        L.marker([liEle.lat, liEle.lon]).addTo(map).bindPopup(labelEle.textContent).openPopup()
-      })
-    } else {
-      //如果是对象，则是地点分类
-      const detailsEle = document.createElement('details')
-      if (location.name) {
-        const summaryEle = document.createElement('summary')
-        // Format the location name
-        summaryEle.textContent = formatName(location.name)
-        detailsEle.appendChild(summaryEle)
+        parent.appendChild(ulEle)
       }
-      // Add a title for the boundary
-      if (location.boundary) {
-        const titleEle = document.createElement('h3')
-        titleEle.textContent = location.name + ' Boundary'
-        detailsEle.appendChild(titleEle)
-      }
-      liEle.appendChild(detailsEle)
-      if (location.location) {
-        viewCoord(detailsEle, location.location)
-      }
-    }
-    ulEle.appendChild(liEle)
-  }
-  parent.appendChild(ulEle)
-}
 
       //刷新地点信息
       function updatePlace() {
