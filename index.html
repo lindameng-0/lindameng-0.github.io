@@ -297,7 +297,8 @@
       if (location.location) {
         // Add a title element before the sub-locations
         const titleEle = document.createElement('h3')
-        titleEle.textContent = formatName(location.name)
+        // Use the location name as the title
+        titleEle.textContent = location.name
         detailsEle.appendChild(titleEle)
         viewCoord(detailsEle, location.location)
       }
