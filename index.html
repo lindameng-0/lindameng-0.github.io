@@ -6,8 +6,15 @@
   <title>Signpost</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500;700&display=swap" rel="stylesheet">
+
   <style type="text/css">
+    * {
+      font-family: 'Roboto', sans-serif;
+    }
+
     #placeList ul {
       list-style-type: none;
       padding-inline-start: 1.2rem;
@@ -22,7 +29,9 @@
 
     #placeList summary {
       opacity: 1;
-      padding: 1.2rem;
+      padding: 1rem;
+      font-weight: bold;
+      font-size: 1.2rem;
     }
 
     #placeList span {
