@@ -292,7 +292,9 @@
               liEle.appendChild(lastMapDiv)
               const map = L.map(lastMapDiv)
               map.fitBounds([[lastLat, lastLng], [liEle.lat, liEle.lon]])
-              const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '©<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map)
+              const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '©<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              }).addTo(map)
               L.marker([lastLat, lastLng]).addTo(map)
               L.marker([liEle.lat, liEle.lon]).addTo(map).bindPopup(labelEle.textContent).openPopup()
             })
@@ -304,12 +306,6 @@
               // Format the location name
               summaryEle.textContent = formatName(location.name)
               detailsEle.appendChild(summaryEle)
-            }
-            // Add the boundary name as a title
-            if (location.boundary) {
-              const titleEle = document.createElement('h3')
-              titleEle.textContent = location.name
-              detailsEle.appendChild(titleEle)
             }
 
             liEle.appendChild(detailsEle)
@@ -330,6 +326,11 @@
           placeList.removeChild(placeList.lastChild)
         }
         if (lastPlace) {
+          // Create a title with the name of the boundary
+          const h1Ele = document.createElement('h1')
+          h1Ele.textContent = formatName(lastPlace.name)
+          placeList.appendChild(h1Ele)
+          // Show the places in the boundary
           viewCoord(placeList, lastPlace.location)
         }
       }
