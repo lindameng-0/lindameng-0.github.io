@@ -1,0 +1,248 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Raleway:wght@300;400;600&display=swap');
+
+body, html {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #000;
+    color: #fff;
+    font-family: 'Raleway', sans-serif;
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+#chapter-catalogue {
+    max-width: 800px;
+    padding: 60px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(25,25,25,0.7) 0%, rgba(10,10,10,0.8) 100%);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+}
+
+h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 3em;
+    margin-bottom: 10px;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+h2 {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.5em;
+    margin-bottom: 50px;
+    color: #bbb;
+    font-weight: 300;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
+
+#chapter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 50px;
+}
+
+.chapter-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 400;
+    text-align: left;
+    font-size: 1.1em;
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+
+.chapter-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+    transform: translateX(-100%);
+    transition: 0.5s;
+}
+
+.chapter-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(10px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.chapter-item:hover::before {
+    transform: translateX(100%);
+}
+
+.nav-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    z-index: 1002;
+    transition: transform 0.3s ease;
+}
+
+.nav-button:hover {
+    transform: scale(1.1);
+}
+
+.nav-button img {
+    width: 30px;
+    height: 30px;
+    transition: transform 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#chapter-catalogue > * {
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+#chapter-catalogue > *:nth-child(1) { animation-delay: 0.1s; }
+#chapter-catalogue > *:nth-child(2) { animation-delay: 0.2s; }
+#chapter-catalogue > *:nth-child(3) { animation-delay: 0.3s; }
+
+.chapter-item {
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+.chapter-item:nth-child(1) { animation-delay: 0.4s; }
+.chapter-item:nth-child(2) { animation-delay: 0.5s; }
+.chapter-item:nth-child(3) { animation-delay: 0.6s; }
+.chapter-item:nth-child(4) { animation-delay: 0.7s; }
+.chapter-item:nth-child(5) { animation-delay: 0.8s; }
+
+.custom-scrollbar {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 70vh; /* Set to 70% of viewport height */
+    width: 20px;
+    display: none; /* Hide by default */
+    flex-direction: column;
+    align-items: center;
+    z-index: 1001;
+}
+
+.scrollbar-line {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.scrollbar-line-image {
+    height: 100%;
+    width: 100%;
+    background-image: url('test.jpg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.scrollbar-thumb {
+    position: absolute;
+    width: 100%;
+    height: 30px; /* Adjust this if needed */
+    background-image: url('test.jpg');
+    background-size: cover;
+    left: 0;
+    cursor: pointer;
+}
+
+#book-content {
+    height: 100vh;
+    overflow-y: auto;
+    padding-right: 40px; /* Make room for the scrollbar */
+    box-sizing: border-box;
+}
+
+/* Hide default scrollbar */
+#book-content::-webkit-scrollbar {
+    display: none;
+}
+
+#book-content {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#book-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Other existing styles */
+}
+
+/* Base styles for PDF pages */
+.pdf-page {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.pdf-page canvas {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 768px) {
+    .pdf-page {
+        margin: 10px auto; /* Center horizontally */
+        display: flex;
+        justify-content: center;
+    }
+
+    .pdf-page canvas {
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 auto; /* Ensure centered */
+    }
+
+    /* Additional centering if needed */
+    #book-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (min-width: 769px) {
+    #book-content {
+        padding-right: 60px; 
+    }
+
+    .custom-scrollbar {
+        display: flex;
+    }
+}
+

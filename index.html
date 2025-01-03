@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Autoplay Music -->
+    <audio id="background-music" src="main/ambience.mp3" loop></audio>
+
+    <!-- Menu -->
+    <nav id="navbar">
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#world">World</a></li>
+            <li><a href="#characters">Characters</a></li>
+            <li><a href="#books">Books</a></li>
+            <li><a href="#media">Media</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div id="audio-toggle" class="audio-icon">
+            <div class="bar bar1"></div>
+            <div class="bar bar2"></div>
+            <div class="bar bar3"></div>
+            <div class="bar bar4"></div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home">
+        <div class="home-content">
+            <h1 class="tracking-in-expand">Elegy of Stellar Flight</h1>
+        </div>
+    </section>
+
+
+    <!-- Sections -->
+    <section id="world">
+        <h2>World</h2>
+        <p>Description of the world...</p>
+    </section>
+
+    <section id="characters">
+        <div class="background-animation"></div>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <img src="up-arrow.png" class="arrow up" onclick="scrollOrganizations(-1)" alt="Scroll Organizations Up"
+                tabindex="0" aria-label="Scroll Organizations Up">
+            <div class="organization-list">
+                <!-- Organization list will be populated by JavaScript -->
+            </div>
+            <img src="down-arrow.png" class="arrow down" onclick="scrollOrganizations(1)"
+                alt="Scroll Organizations Down" tabindex="0" aria-label="Scroll Organizations Down">
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="character-info parent-container" id="character1">
+                <img src="test.jpg" alt="Character Full" class="character-full-img">
+                <div class="character-details">
+                    <div class="character-text">
+                        <h3 id="character-name">Black Swan</h3>
+                        <p id="character-intro">A Memokeeper of the Garden of Recollection. A mysterious and elegant
+                            soothsayer.</p>
+                        <p id="character-desc">She often wears a warm smile and is willing to patiently listen to the
+                            words of others, thus using such means as a pretext to enter "memories" and gain omniscience
+                            over certain matters. A lady passionate about collecting unique memories, yet the thoughts
+                            that guide her are hard to glean.</p>
+                    </div>
+                    <div class="line vertical"></div>
+                    <div class="star">✦</div>
+                    <div class="deco">⟡</div>
+                    <div class="character-selection">
+                        <img src="left-arrow.png" class="arrow left" onclick="scrollCharacters(-1)"
+                            alt="Scroll Characters Left" tabindex="0" aria-label="Scroll Characters Left">
+                        <div class="character-list" id="character-list">
+                            <!-- Character thumbnails will be populated by JavaScript -->
+                        </div>
+                        <img src="right-arrow.png" class="arrow right" onclick="scrollCharacters(1)"
+                            alt="Scroll Characters Right" tabindex="0" aria-label="Scroll Characters Right">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="books">
+        <div class="books-list">
+            <div class="book-container" data-book="1" data-chapters="true">
+                <a href="book1.html">
+                    <div class="book-cover">
+                        <img src="less.png" alt="Book 1">
+                    </div>
+                </a>
+                <div class="volume-name">Volume 1</div>
+                <div class="book-info">
+                    <div class="book-description">
+                        This is the beautiful eternity and the ego... I believe in. This is the Elysian Realm, the story of the Thirteen Flame Chasers.
+                    </div>
+                    <a href="book1.html" class="read-now">View More</a>
+                </div>
+            </div>
+            
+            <div class="book-container" data-book="2" data-chapters="true">
+                <a href="book2.html">
+                    <div class="book-cover">
+                        <img src="less.png" alt="Book 2">
+                    </div>
+                </a>
+                <div class="volume-name">Volume 2</div>
+                <div class="book-info">
+                    <div class="book-description">
+                        Description for Book 2
+                    </div>
+                    <a href="book2.html" class="read-now">View More</a>
+                </div>
+            </div>
+            
+            <div class="book-container" data-book="3" data-chapters="false">
+                <a href="book3.html">
+                    <div class="book-cover">
+                        <img src="less.png" alt="Book 3">
+                    </div>
+                </a>
+                <div class="volume-name">Volume 3</div>
+                <div class="book-info">
+                    <div class="book-description">
+                        Description for Book 3
+                    </div>
+                    <a href="book3.html" class="read-now">View More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="media">
+        <div class="media-gallery">
+            <div class="media-item large"><img src="media/eli.png" alt="Media 1"></div>
+            <div class="media-item tall"><img src="media/luca.png" alt="Media 2"></div>
+            <div class="media-item wide"><img src="media/cw 1.png" alt="Media 3"></div>
+            <div class="media-item wide"><img src="media/cw 2.jpg" alt="Media 4"></div>
+            <div class="media-item"><img src="media/frostsight1.jpg" alt="Media 5"></div>
+            <div class="media-item"><img src="media/frostsight2.jpg" alt="Media 6"></div>
+            <div class="media-item wide"><img src="media/pv1.png" alt="Media 7"></div>
+            <div class="media-item"><img src="media/photo 1.5.jpg" alt="Media 8"></div>
+            <div class="media-item"><img src="media/chapter4.4.jpg" alt="Media 9"></div>
+        </div>
+        <div id="fullscreen-overlay" class="fullscreen-overlay">
+            <span class="close-btn">&times;</span>
+            <img id="fullscreen-image" src="" alt="Fullscreen Image">
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2>Contact</h2>
+        <p>Contact information...</p>
+    </section>
+
+    <script src="animation.js"></script>
+    <div id="particles-js"></div>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+</body>
+
+</html>
