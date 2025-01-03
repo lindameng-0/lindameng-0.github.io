@@ -35,8 +35,8 @@
         }
     
         // Initial check
-        checkMobileWarning();
-    
+        checkMobileWarning(); 
+        
         // Add resize listener
         window.addEventListener('resize', checkMobileWarning);*/
 
