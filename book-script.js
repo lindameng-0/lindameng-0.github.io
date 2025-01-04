@@ -148,27 +148,31 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             
         } catch (error) {
-            console.error('Error loading chapter:', error);
-            showError('Chapter not found');
+            console.error('Error loading PDF:', error);
+            bookContent.style.display = 'block';
+            bookContent.style.height = '100vh';
+            
+            bookContent.innerHTML = `
+                <div id="return-catalogue" class="nav-button">
+                    <img src="catalogue-icon.png">
+                </div>
+                <div style="
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    color: #fff;
+                    text-align: center;
+                    font-family: 'Cinzel', serif;
+                    font-size: 2em;
+                    white-space: nowrap;
+                    letter-spacing: 2px;
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                ">Chapter not found</div>
+            `;
+            
+            document.getElementById('return-catalogue').addEventListener('click', showCatalogue);
         }
-    }
-
-    function showError(errorMessage) {
-        bookContent.innerHTML = '<div id="return-catalogue" class="nav-button"><img src="catalogue-icon.png"></div>';
-        document.getElementById('return-catalogue').addEventListener('click', showCatalogue);
-        const messageElement = document.createElement('div');
-        messageElement.textContent = errorMessage;
-        messageElement.style.color = 'white';
-        messageElement.style.textAlign = 'center';
-        messageElement.style.position = 'absolute';
-        messageElement.style.top = '50%';
-        messageElement.style.left = '50%';
-        messageElement.style.transform = 'translate(-50%, -50%)';
-        messageElement.style.fontSize = '2em';
-        messageElement.style.fontFamily = 'Cinzel, serif';
-        messageElement.style.width = '80%';  // Add width
-        messageElement.style.maxWidth = '600px';  // Add max-width
-        bookContent.appendChild(messageElement);
     }
 
     function showCatalogue() {
