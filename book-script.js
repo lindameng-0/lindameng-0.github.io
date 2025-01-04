@@ -153,21 +153,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function showError(message) {
-        console.error('Error loading PDF:', error);
+    function showError(errorMessage) {
         bookContent.innerHTML = '<div id="return-catalogue" class="nav-button"><img src="catalogue-icon.png"></div>';
         document.getElementById('return-catalogue').addEventListener('click', showCatalogue);
-        const message = document.createElement('div');
-        message.textContent = 'Chapter not found';
-        message.style.color = 'white';
-        message.style.textAlign = 'center';
-        message.style.position = 'absolute';
-        message.style.top = '50%';
-        message.style.left = '50%';
-        message.style.transform = 'translate(-50%, -50%)';
-        message.style.fontSize = '2em';
-        message.style.fontFamily = 'Cinzel, serif'; // Use the custom font
-        bookContent.appendChild(message);
+        const messageElement = document.createElement('div');
+        messageElement.textContent = errorMessage;
+        messageElement.style.color = 'white';
+        messageElement.style.textAlign = 'center';
+        messageElement.style.position = 'absolute';
+        messageElement.style.top = '50%';
+        messageElement.style.left = '50%';
+        messageElement.style.transform = 'translate(-50%, -50%)';
+        messageElement.style.fontSize = '2em';
+        messageElement.style.fontFamily = 'Cinzel, serif';
+        messageElement.style.width = '80%';  // Add width
+        messageElement.style.maxWidth = '600px';  // Add max-width
+        bookContent.appendChild(messageElement);
     }
 
     function showCatalogue() {
