@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Raleway:wght@300;400;600&display=swap');
 
+/* Base Styles */
 body, html {
     margin: 0;
     padding: 0;
@@ -20,11 +21,11 @@ body::-webkit-scrollbar {
     display: none;
 }
 
+/* Chapter Catalogue */
 #chapter-catalogue {
     max-width: 800px;
     padding: 60px;
     text-align: center;
-    background: linear-gradient(135deg, rgba(25,25,25,0.7) 0%, rgba(10,10,10,0.8) 100%);
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     backdrop-filter: blur(10px);
@@ -71,7 +72,6 @@ h2 {
     overflow: hidden;
 }
 
-
 .chapter-item::before {
     content: '';
     position: absolute;
@@ -94,6 +94,67 @@ h2 {
     transform: translateX(100%);
 }
 
+/* Book Content */
+#book-content {
+    height: 100vh;
+    overflow-y: auto;
+    position: relative;
+    padding-right: 40px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#book-content::-webkit-scrollbar {
+    display: none;
+}
+
+/* Chapter Content */
+.chapter-content {
+    max-width: min(800px, 90%);
+    width: 100%;
+    margin: 2rem auto;
+    padding: clamp(1rem, 5%, 2.5rem);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-family: 'Raleway', sans-serif;
+    line-height: 1.8;
+    font-size: clamp(1rem, 2.5vw, 1.1rem);
+}
+
+.chapter-content h1 {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    text-align: left;
+    margin: 1em 0 1.5em;
+}
+
+.chapter-content h2 {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    margin: 1.5em 0 0.8em;
+}
+
+.chapter-content h3 {
+    font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+    margin: 1.2em 0 0.6em;
+}
+
+.chapter-content p {
+    margin: 1.2em 0;
+    font-size: clamp(1rem, 2.5vw, 1.1rem);
+}
+
+.chapter-content em {
+    color: #bbb;
+    font-style: italic;
+}
+
+.chapter-content strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Navigation */
 .nav-button {
     position: fixed;
     top: 20px;
@@ -102,52 +163,22 @@ h2 {
     height: 30px;
     cursor: pointer;
     z-index: 1002;
-    transition: transform 0.3s ease;
-}
-
-.nav-button:hover {
-    transform: scale(1.1);
 }
 
 .nav-button img {
     width: 30px;
     height: 30px;
-    transition: transform 0.3s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-#chapter-catalogue > * {
-    animation: fadeIn 0.5s ease forwards;
-    opacity: 0;
-}
-
-#chapter-catalogue > *:nth-child(1) { animation-delay: 0.1s; }
-#chapter-catalogue > *:nth-child(2) { animation-delay: 0.2s; }
-#chapter-catalogue > *:nth-child(3) { animation-delay: 0.3s; }
-
-.chapter-item {
-    animation: fadeIn 0.5s ease forwards;
-    opacity: 0;
-}
-
-.chapter-item:nth-child(1) { animation-delay: 0.4s; }
-.chapter-item:nth-child(2) { animation-delay: 0.5s; }
-.chapter-item:nth-child(3) { animation-delay: 0.6s; }
-.chapter-item:nth-child(4) { animation-delay: 0.7s; }
-.chapter-item:nth-child(5) { animation-delay: 0.8s; }
-
+/* Custom Scrollbar */
 .custom-scrollbar {
     position: fixed;
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
-    height: 70vh; /* Set to 70% of viewport height */
+    height: 70vh;
     width: 20px;
-    display: none; /* Hide by default */
+    display: none;
     flex-direction: column;
     align-items: center;
     z-index: 1001;
@@ -173,76 +204,98 @@ h2 {
 .scrollbar-thumb {
     position: absolute;
     width: 100%;
-    height: 30px; /* Adjust this if needed */
+    height: 30px;
     background-image: url('test.jpg');
     background-size: cover;
     left: 0;
     cursor: pointer;
 }
 
-#book-content {
-    height: 100vh;
-    overflow-y: auto;
-    padding-right: 40px; /* Make room for the scrollbar */
-    box-sizing: border-box;
+/* Error Message */
+.error-message {
+    color: white;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em;
+    font-family: 'Cinzel', serif;
 }
 
-/* Hide default scrollbar */
-#book-content::-webkit-scrollbar {
-    display: none;
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-#book-content {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+#chapter-catalogue > * {
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
 }
 
-#book-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* Other existing styles */
+#chapter-catalogue > *:nth-child(1) { animation-delay: 0.1s; }
+#chapter-catalogue > *:nth-child(2) { animation-delay: 0.2s; }
+#chapter-catalogue > *:nth-child(3) { animation-delay: 0.3s; }
+
+.chapter-item {
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
 }
 
-/* Base styles for PDF pages */
-.pdf-page {
-    margin: 20px 0;
-    display: flex;
-    justify-content: center;
-}
+.chapter-item:nth-child(1) { animation-delay: 0.4s; }
+.chapter-item:nth-child(2) { animation-delay: 0.5s; }
+.chapter-item:nth-child(3) { animation-delay: 0.6s; }
+.chapter-item:nth-child(4) { animation-delay: 0.7s; }
+.chapter-item:nth-child(5) { animation-delay: 0.8s; }
 
-.pdf-page canvas {
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
-
-@media (max-width: 768px) {
-    .pdf-page {
-        margin: 10px auto; /* Center horizontally */
-        display: flex;
-        justify-content: center;
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .chapter-content {
+        margin: 0.5rem;
+        padding: 1rem;
+        border-radius: 8px;
+        max-width: calc(100% - 1rem);
     }
-
-    .pdf-page canvas {
-        width: 100% !important;
-        height: auto !important;
-        margin: 0 auto; /* Ensure centered */
+    
+    .chapter-content p {
+        line-height: 1.6;
     }
-
-    /* Additional centering if needed */
-    #book-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    
+    #chapter-catalogue {
+        margin: 1rem;
+        padding: 30px;
     }
-}
-
-@media (min-width: 769px) {
-    #book-content {
-        padding-right: 60px; 
-    }
-
+    
     .custom-scrollbar {
-        display: flex;
+        display: none;
     }
 }
 
+@media screen and (max-width: 320px) {
+    .chapter-content {
+        margin: 0.25rem;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .chapter-content {
+        margin: 4rem auto;
+        padding: 3rem 4rem;
+    }
+}
+
+@media screen and (min-width: 2000px) {
+    .chapter-content {
+        max-width: 1000px;
+    }
+}
+
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    .chapter-content {
+        margin: 0.5rem auto;
+        padding: 1rem;
+    }
+}

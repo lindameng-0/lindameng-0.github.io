@@ -8,13 +8,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="custom-scrollbar" style="display: none;">
+    <div id="book-content" style="display: none;">
+        <div id="return-catalogue" class="nav-button">
+            <img src="catalogue-icon.png">
+        </div>
+        <div id="chapter-content" class="chapter-content"></div>
+    </div>
+    
+    <div class="custom-scrollbar">
         <div class="scrollbar-line">
             <div class="scrollbar-line-image"></div>
+            <div class="scrollbar-thumb"></div>
         </div>
-        <div class="scrollbar-thumb"></div>
     </div>
-
     <div id="chapter-catalogue">
         <h1>Elegy of Stellar Flight</h1>
         <h2>Volume I</h2>
@@ -25,13 +31,8 @@
             <img src="home-icon.png">
         </div>
     </div>
-    <div id="book-content" style="display: none;">
-        <!-- PDF content will be loaded here -->
-        <div id="return-catalogue" class="nav-button">
-            <img src="catalogue-icon.png">
-        </div>
-    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="book-script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 </body>
 </html>
