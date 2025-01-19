@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Chapter data for each book
     const bookChapters = {
         '1': [
-            { title: "Prologue", mdFile: "chapters/vol1/prologue.md" },
+            { title: "Prologue", mdFile: "./chapters/vol1/prologue.md" },
         ],
         '2': [
         ],
