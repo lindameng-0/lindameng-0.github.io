@@ -19,16 +19,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Chapter data for each book
     const bookChapters = {
         '1': [
-            { title: "The Beginning", mdFile: "chapters/vol1/chapter1.md" },
-            { title: "The Journey", mdFile: "chapters/vol1/chapter2.md" },
-            { title: "The Climax", mdFile: "chapters/vol1/chapter3.md" },
-            { title: "The Resolution", mdFile: "chapters/vol1/chapter4.md" },
-            { title: "The Aftermath", mdFile: "chapters/vol1/chapter5.md" }
+            { title: "Prologue", mdFile: "chapters/vol1/chapter1.md" },
         ],
         '2': [
-            { title: "The Beginning", mdFile: "chapters/vol2/chapter1.md" },
-            { title: "The Journey", mdFile: "chapters/vol2/chapter2.md" },
-            { title: "The Climax", mdFile: "chapters/vol2/chapter3.md" }
         ],
         '3': []
     };

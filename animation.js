@@ -390,12 +390,12 @@
 
         // Character Data and Functions
         const charactersData = {
-            "Singularity": [
+            "Auralis": [
                 {
                     id: "character1",
                     name: "Luca Hendrix",
-                    intro: "A Memokeeper of the Garden of Recollection. A mysterious and elegant soothsayer.",
-                    desc: "She often wears a warm smile and is willing to patiently listen to the words of others, thus using such means as a pretext to enter 'memories' and gain omniscience over certain matters. A lady passionate about collecting unique memories, yet the thoughts that guide her are hard to glean.",
+                    intro: "Placeholder Text",
+                    desc: "Placeholder Text",
                     img: "characters/luca design.png",
                     thumb: "test.jpg"
                 },
@@ -410,8 +410,8 @@
                 {
                     id: "character3",
                     name: "Rae Estelle",
-                    intro: "A Memokeeper of the Garden of Recollection. A mysterious and elegant soothsayer.",
-                    desc: "She often wears a warm smile and is willing to patiently listen to the words of others, thus using such means as a pretext to enter 'memories' and gain omniscience over certain matters. A lady passionate about collecting unique memories, yet the thoughts that guide her are hard to glean.",
+                    intro: "Placeholder Text",
+                    desc: "Placeholder Text",
                     img: "test.jpg",
                     thumb: "test.jpg"
                 },
@@ -425,9 +425,9 @@
                 },
                 {
                     id: "character5",
-                    name: "Black Swan 5",
-                    intro: "A Memokeeper of the Garden of Recollection. A mysterious and elegant soothsayer.",
-                    desc: "She often wears a warm smile and is willing to patiently listen to the words of others, thus using such means as a pretext to enter 'memories' and gain omniscience over certain matters. A lady passionate about collecting unique memories, yet the thoughts that guide her are hard to glean.",
+                    name: "Placeholder Text",
+                    intro: "Placeholder Text",
+                    desc: "Placeholder Text",
                     img: "test.jpg",
                     thumb: "test.jpg"
                 },
@@ -441,9 +441,9 @@
                 },
                 {
                     id: "character7",
-                    name: "Black Swan 7",
-                    intro: "A Memokeeper of the Garden of Recollection. A mysterious and elegant soothsayer.",
-                    desc: "She often wears a warm smile and is willing to patiently listen to the words of others, thus using such means as a pretext to enter 'memories' and gain omniscience over certain matters. A lady passionate about collecting unique memories, yet the thoughts that guide her are hard to glean.",
+                    name: "Placeholder Text",
+                    intro: "Placeholder Text",
+                    desc: "Placeholder Text",
                     img: "test.jpg",
                     thumb: "test.jpg"
                 },
@@ -456,7 +456,7 @@
                     thumb: "test.jpg"
                 }
             ],
-            "Valkyria": [
+            "Citadel": [
                 {
                     id: "character9",
                     name: "Grayson Exton",
