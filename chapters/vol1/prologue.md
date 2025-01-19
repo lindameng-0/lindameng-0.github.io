@@ -61,7 +61,7 @@ Eli had seen fear before. He had seen grief, rage, hopelessness, and every shade
 
 He was waiting.
 
-The boy didn’t blink, didn’t stir, and Eli felt a flare of something sharp and raw twist in his chest. Anger, maybe, or desperation. How could he just sit there? How could he let the rain swallow him whole? Eli couldn’t just leave him. Not like this.
+The young man didn’t blink, didn’t stir, and Eli felt a flare of something sharp and raw twist in his chest. Anger, maybe, or desperation. How could he just sit there? How could he let the rain swallow him whole? Eli couldn’t just leave him. Not like this.
 
 “Everything going to be okay,” Eli smiled faintly. “I promise.”
 
@@ -96,7 +96,7 @@ When he returned hours later, the young man was gone.
 
 The rain stopped on the eighth day.
 
-And where the boy had been, a single flower grew, its white petals gleaming like the light of a distant star underneath the barrier. 
+And where the young man had been, a single flower grew, its white petals gleaming like the light of a distant star underneath the barrier. 
 
 Eli stood alone in the quiet after the storm, staring down at the fragile bloom.
 
