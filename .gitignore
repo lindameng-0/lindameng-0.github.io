@@ -1,0 +1,9 @@
+node_modules/
+output/
+.playwright-cli/
+*.zip
+.openai/
+.agents/
+.codex/
+.aws/
+*.log
